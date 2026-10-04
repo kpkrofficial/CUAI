@@ -10,7 +10,10 @@ import {
 export class GroqProvider extends BaseAIProvider {
   readonly providerName = 'groq';
   readonly defaultModel = 'llama-3.3-70b-versatile';
-  readonly baseUrl = 'https://api.groq.com/openai/v1';
+
+  getBaseUrl(): string {
+    return process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1';
+  }
 
   getModelName(): string {
     return process.env.GROQ_MODEL || process.env.AI_MODEL || this.defaultModel;
@@ -91,7 +94,7 @@ export class GroqProvider extends BaseAIProvider {
     }
 
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
+      const response = await this.fetchWithTimeout(`${this.getBaseUrl()}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +178,7 @@ export class GroqProvider extends BaseAIProvider {
     const start = Date.now();
     try {
       const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/models`,
+        `${this.getBaseUrl()}/models`,
         {
           method: 'GET',
           headers: {

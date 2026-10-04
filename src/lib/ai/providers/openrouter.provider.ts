@@ -10,7 +10,10 @@ import {
 export class OpenRouterProvider extends BaseAIProvider {
   readonly providerName = 'openrouter';
   readonly defaultModel = 'meta-llama/llama-3.3-70b-instruct';
-  readonly baseUrl = 'https://openrouter.ai/api/v1';
+
+  getBaseUrl(): string {
+    return process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+  }
 
   getModelName(): string {
     return process.env.OPENROUTER_MODEL || process.env.AI_MODEL || this.defaultModel;
@@ -91,7 +94,7 @@ export class OpenRouterProvider extends BaseAIProvider {
     }
 
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/chat/completions`, {
+      const response = await this.fetchWithTimeout(`${this.getBaseUrl()}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +182,7 @@ export class OpenRouterProvider extends BaseAIProvider {
 
     const start = Date.now();
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/models`, {
+      const response = await this.fetchWithTimeout(`${this.getBaseUrl()}/models`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,

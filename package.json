@@ -14,6 +14,7 @@
     "test:e2e": "tsx qa/tests/e2e.test.ts",
     "test:prod": "npx tsx --env-file=.env.local tests/production-readiness.test.ts",
     "test:ai": "npx tsx --env-file=.env.local tests/ai-provider-abstraction.test.ts",
+    "test:matrix": "npx tsx --env-file=.env.local tests/multi-provider-matrix.test.ts",
     "test:all": "tsx qa/run-full-suite.ts",
     "compare:ai": "npx tsx --env-file=.env.local scripts/compare-ai-providers.ts"
   },
