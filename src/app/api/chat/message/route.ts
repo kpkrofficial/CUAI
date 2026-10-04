@@ -83,6 +83,10 @@ export async function POST(req: Request) {
         details: {
           tools_executed: (orchestration.toolResults || []).map((t) => t.tool),
           sources_count: (orchestration.citations || []).length,
+          provider: orchestration.provider,
+          model: orchestration.model,
+          latency_ms: orchestration.latencyMs,
+          usage: orchestration.usage,
         },
       },
       context
@@ -93,6 +97,10 @@ export async function POST(req: Request) {
       sessionId: activeSession.id,
       userMessage,
       assistantMessage,
+      provider: orchestration.provider,
+      model: orchestration.model,
+      latencyMs: orchestration.latencyMs,
+      usage: orchestration.usage,
       ragResult: {
         answer: orchestration.reply,
         found: true,
