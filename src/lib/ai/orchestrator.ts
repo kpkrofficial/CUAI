@@ -264,7 +264,7 @@ You strictly adhere to these rules:
       parameters: t.parameters,
     }));
 
-    const modelName = 'gemini-2.5-flash';
+    const modelName = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
     const contents: any[] = [
       ...history.map(h => ({
         role: h.role === 'assistant' ? 'model' : 'user',
@@ -298,12 +298,14 @@ You strictly adhere to these rules:
       }
 
       // Multi-turn tool response to Gemini for final factual synthesis
+      const modelTurn = initialResponse.candidates?.[0]?.content || {
+        role: 'model',
+        parts: [{ functionCall: call }],
+      };
+
       const secondTurnContents = [
         ...contents,
-        {
-          role: 'model',
-          parts: [{ functionCall: call }],
-        },
+        modelTurn,
         {
           role: 'user',
           parts: [{

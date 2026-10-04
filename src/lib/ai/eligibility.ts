@@ -26,28 +26,52 @@ export class EligibilityEngine {
     const criteria: EligibilityCriterion[] = [];
     let passCount = 0;
 
+    // Helper to normalize academic marks / CGPA / raw scores into percentage
+    const parseAcademicScore = (rawVal: any, examType: 'inter' | 'ssc'): { percentage: number; cgpa?: number; display: string } | null => {
+      if (!rawVal) return null;
+      const str = String(rawVal).trim().toLowerCase();
+      if (str === 'c' || str.includes('first') || str.length === 0) return null;
+
+      const numMatch = str.match(/([0-9]+(?:\.[0-9]+)?)/);
+      if (!numMatch) return null;
+      const num = parseFloat(numMatch[1]);
+      if (isNaN(num)) return null;
+
+      // Case 1: CGPA (<= 10.0 or marked as cgpa)
+      if (num <= 10.0 || str.includes('cgpa')) {
+        const pct = num * 9.5;
+        return { percentage: pct, cgpa: num, display: `${num} CGPA (${pct.toFixed(1)}%)` };
+      }
+
+      // Case 2: Percentage (10.0 < num <= 100.0)
+      if (num <= 100.0) {
+        return { percentage: num, display: `${num}%` };
+      }
+
+      // Case 3: Raw Marks (> 100)
+      const maxMarks = examType === 'inter' ? 1000 : 600;
+      const pct = (num / maxMarks) * 100;
+      return { percentage: pct, display: `${num}/${maxMarks} (${pct.toFixed(1)}%)` };
+    };
+
     // 1. Check CGPA or Secondary marks
     let academicScore = 0;
     let academicPassed = false;
     let scoreDetail = 'N/A';
+
+    const interScore = parseAcademicScore(student.intermediate_marks || student.inter_marks || student.twelfth_percentage, 'inter');
+    const sscScore = parseAcademicScore(student.ssc_marks || student.tenth_percentage, 'ssc');
+    const bestScore = interScore || sscScore;
 
     if (student.cgpa) {
       const val = parseFloat(student.cgpa);
       academicScore = isNaN(val) ? 0 : val;
       academicPassed = academicScore >= 8.5;
       scoreDetail = `CGPA: ${student.cgpa}`;
-    } else if (student.inter_marks || student.twelfth_percentage) {
-      const raw = student.inter_marks || student.twelfth_percentage;
-      const val = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
-      academicScore = isNaN(val) ? 0 : val;
-      academicPassed = academicScore >= 85;
-      scoreDetail = `Intermediate: ${raw}%`;
-    } else if (student.ssc_marks || student.tenth_percentage) {
-      const raw = student.ssc_marks || student.tenth_percentage;
-      const val = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
-      academicScore = isNaN(val) ? 0 : val;
-      academicPassed = academicScore >= 85;
-      scoreDetail = `SSC: ${raw}%`;
+    } else if (bestScore) {
+      academicScore = bestScore.percentage;
+      academicPassed = bestScore.cgpa ? bestScore.cgpa >= 8.5 : bestScore.percentage >= 85.0;
+      scoreDetail = bestScore.display;
     }
 
     criteria.push({
