@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { CHATBOT_TOOLS, ToolExecutionEngine, type ToolResult } from './tools';
+import { StudentService } from '@/lib/services/student.service';
 import type { AuthContext } from '@/lib/auth/types';
 
 export interface ChatOrchestrationResult {
@@ -76,22 +77,39 @@ export class AIOrchestrator {
       }
     }
 
-    // 3. Attempt Live Gemini Generation if valid API key is present
+    // 3. Live Gemini Orchestration
+    const isDevMockAllowed = process.env.NODE_ENV !== 'production' && process.env.ALLOW_DEV_AI_MOCK === 'true';
     const gemini = this.getGeminiClient();
+
     if (gemini) {
       try {
         return await this.executeGeminiWithTools(gemini, rawInput, history, context);
       } catch (geminiError: any) {
-        console.warn('[AIOrchestrator] Live Gemini failed, falling back to deterministic engine:', geminiError.message);
+        console.error('[AIOrchestrator] Live Gemini generation failed:', geminiError.message);
+        if (!isDevMockAllowed) {
+          return {
+            reply: "AI service is temporarily unavailable. Please try again later or contact campus administration.",
+            toolResults: [{ tool: 'gemini_ai', success: false, error: 'SERVICE_UNAVAILABLE' }],
+          };
+        }
       }
     }
 
-    // 4. Grounded Deterministic Tool Execution Engine (Production-safe Fallback)
+    // Guard: Production cannot silently fall back to deterministic regex engine
+    if (!isDevMockAllowed) {
+      return {
+        reply: "AI service is temporarily unavailable. Please try again later or contact campus administration.",
+        toolResults: [{ tool: 'gemini_ai', success: false, error: 'GEMINI_KEY_NOT_CONFIGURED' }],
+      };
+    }
+
+    // 4. Grounded Deterministic Tool Execution Engine (Development/Offline Testing Only)
     return await this.executeDeterministicOrchestration(rawInput, context);
   }
 
   /**
    * Deterministic orchestration executing verified database tools and returning grounded responses.
+   * STRICTLY RESTRICTED to local development and offline mock tests.
    */
   private static async executeDeterministicOrchestration(
     input: string,
@@ -104,7 +122,12 @@ export class AIOrchestrator {
     // Case A: Eligibility questions
     if (lower.includes('eligible') || lower.includes('scholarship') || lower.includes('merit')) {
       const rollMatch = input.match(/\b([0-9]{2}[A-Za-z]{2,5}[0-9]{2,4})\b/);
-      const targetRoll = rollMatch ? rollMatch[1] : (context.role === 'student' ? '23CSE104' : '23CSE104');
+      let targetRoll = rollMatch ? rollMatch[1] : undefined;
+      if (!targetRoll && context.role === 'student') {
+        const own = await StudentService.getOwnStudentProfile(context);
+        targetRoll = own?.roll_number;
+      }
+      if (!targetRoll) targetRoll = '23CSE104'; // Default test fixture for synthetic dev inquiries
 
       const evalRes = await ToolExecutionEngine.executeTool(
         'getEligibilityData',
@@ -179,7 +202,7 @@ export class AIOrchestrator {
     // Case D: Student Profile or Application Status
     if (lower.includes('application status') || lower.includes('my branch') || lower.includes('my profile') || lower.includes('who is')) {
       const rollMatch = input.match(/\b([0-9]{2}[A-Za-z]{2,5}[0-9]{2,4})\b/);
-      const rollNumber = rollMatch ? rollMatch[1] : undefined;
+      let rollNumber = rollMatch ? rollMatch[1] : undefined;
 
       const pRes = await ToolExecutionEngine.executeTool('getStudentProfile', { rollNumber }, context);
       toolResults.push(pRes);
@@ -217,7 +240,7 @@ export class AIOrchestrator {
   }
 
   /**
-   * Orchestrates live Gemini 2.5 Flash model with server-side tool calling loop.
+   * Orchestrates live Gemini 2.5 Flash model with server-side authorized tool calling loop.
    */
   private static async executeGeminiWithTools(
     gemini: GoogleGenAI,
@@ -233,23 +256,87 @@ You strictly adhere to these rules:
 4. Tenant Isolation: You are serving ${context.campus?.name || 'Main Campus'} (Campus ID: ${context.campusId || 'default'}).
 5. Role: The caller is an authenticated ${context.role}. Students can ONLY query their own records.`;
 
+    // Filter tools by caller role to prevent unauthorized tool dispatch
+    const authorizedTools = CHATBOT_TOOLS.filter(t => !t.requiresAdmin || context.role !== 'student');
+    const functionDeclarations = authorizedTools.map(t => ({
+      name: t.name,
+      description: t.description,
+      parameters: t.parameters,
+    }));
+
     const modelName = 'gemini-2.5-flash';
     const contents: any[] = [
+      ...history.map(h => ({
+        role: h.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: h.content }],
+      })),
       { role: 'user', parts: [{ text: userMessage }] }
     ];
 
-    const response = await gemini.models.generateContent({
+    const initialResponse = await gemini.models.generateContent({
       model: modelName,
       contents,
       config: {
         systemInstruction: systemPrompt,
         temperature: 0.1, // Low temperature for high factual grounding
+        tools: [{ functionDeclarations }],
       },
     });
 
+    const toolResults: ToolResult[] = [];
+    let citations: any[] = [];
+    let sources: string[] = [];
+
+    if (initialResponse.functionCalls && initialResponse.functionCalls.length > 0) {
+      const call = initialResponse.functionCalls[0];
+      const functionName = call.name || '';
+      const execResult = await ToolExecutionEngine.executeTool(functionName, (call.args as any) || {}, context);
+      toolResults.push(execResult);
+      if (execResult.citations) {
+        citations = execResult.citations;
+        sources = citations.map(c => c.document || '');
+      }
+
+      // Multi-turn tool response to Gemini for final factual synthesis
+      const secondTurnContents = [
+        ...contents,
+        {
+          role: 'model',
+          parts: [{ functionCall: call }],
+        },
+        {
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: functionName,
+              response: { result: execResult.success ? execResult.data : { error: execResult.error } },
+            },
+          }],
+        },
+      ];
+
+      const finalResponse = await gemini.models.generateContent({
+        model: modelName,
+        contents: secondTurnContents,
+        config: {
+          systemInstruction: systemPrompt,
+          temperature: 0.1,
+        },
+      });
+
+      return {
+        reply: finalResponse.text?.trim() || "Verified campus information retrieved.",
+        toolResults,
+        citations,
+        sources,
+      };
+    }
+
     return {
-      reply: response.text?.trim() || "No response generated.",
-      toolResults: [],
+      reply: initialResponse.text?.trim() || "No response generated.",
+      toolResults,
+      citations,
+      sources,
     };
   }
 }

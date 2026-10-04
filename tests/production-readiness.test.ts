@@ -269,6 +269,22 @@ async function runTestSuite() {
     'Test 8: SQL injection / jailbreak attack safely refused; zero database execution'
   );
 
+  // ACCEPTANCE TEST 9: Silent AI Fallback Prevention (Section 4)
+  const prevEnv = process.env.NODE_ENV;
+  const prevMock = process.env.ALLOW_DEV_AI_MOCK;
+  try {
+    (process.env as any).NODE_ENV = 'production';
+    process.env.ALLOW_DEV_AI_MOCK = 'false';
+    const prodRes = await AIOrchestrator.handleMessage('Who is student 23CSE104?', [], adminA_context);
+    assert(
+      prodRes.reply.includes('AI service is temporarily unavailable'),
+      'Test 9: Production mode strictly rejects silent fallback to legacy regex when Gemini is offline'
+    );
+  } finally {
+    (process.env as any).NODE_ENV = prevEnv;
+    process.env.ALLOW_DEV_AI_MOCK = prevMock;
+  }
+
   console.log('\n--- 6. CONCURRENCY & INTEGRITY VERIFICATION (100 CONCURRENT DRAFTS) ---');
   const concurrencyCount = 100;
   const draftPromises = [];
@@ -287,9 +303,10 @@ async function runTestSuite() {
   const successCount = results.filter(r => r.status === 'fulfilled').length;
   assert(successCount === concurrencyCount, `100 Concurrent form drafts saved without loss or deadlock (${successCount}/${concurrencyCount})`);
 
-  // Cleanup concurrency test artifacts
+  // Cleanup concurrency test artifacts & test fixtures
   await supabase.from('form_drafts').delete().ilike('roll_number', 'CONCUR_%');
   await supabase.from('chat_sessions').delete().eq('id', sessionA.id);
+  await supabase.from('student_records').delete().in('id', ['test_student_23cit201', 'test_student_23cse104']);
 
   console.log('\n================================================================');
   console.log(`TEST SUMMARY: ${passed} PASSED, ${failed} FAILED (TOTAL: ${passed + failed})`);
@@ -300,7 +317,12 @@ async function runTestSuite() {
   }
 }
 
-runTestSuite().catch(err => {
+runTestSuite().catch(async (err) => {
   console.error('Fatal test error:', err);
+  // Ensure teardown even on fatal errors
+  try {
+    await supabase.from('student_records').delete().in('id', ['test_student_23cit201', 'test_student_23cse104']);
+  } catch (_) {}
   process.exit(1);
 });
+
