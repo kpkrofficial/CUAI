@@ -3,8 +3,15 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const url = 'https://oqehuczoyeffyiofcomk.supabase.co';
-const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZWh1Y3pveWVmZnlpb2Zjb21rIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDIxMzI2NSwiZXhwIjoyMTA1Nzg5MjY1fQ.h3en7klJzwx7_8HtFdvELunVSmmwufQmkJduigX9Hfs';
+if (process.loadEnvFile) {
+  try { process.loadEnvFile(path.join(__dirname, '..', '.env.local')); } catch (_) {}
+}
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !serviceKey) {
+  console.error('Error: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment or .env.local');
+  process.exit(1);
+}
 const supabase = createClient(url, serviceKey);
 
 async function seedActualData() {

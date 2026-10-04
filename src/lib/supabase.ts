@@ -1,29 +1,100 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-// Permanent Supabase Project Production Credentials
-export const DEFAULT_SUPABASE_URL = 'https://oqehuczoyeffyiofcomk.supabase.co';
-export const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZWh1Y3pveWVmZnlpb2Zjb21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTMyNjUsImV4cCI6MjEwNTc4OTI2NX0.CaTSuQzWxrDnd3TPrYOQTD1CAQ2PC-Azzk4Ps6bJZcQ';
-export const DEFAULT_SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZWh1Y3pveWVmZnlpb2Zjb21rIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDIxMzI2NSwiZXhwIjoyMTA1Nzg5MjY1fQ.h3en7klJzwx7_8HtFdvELunVSmmwufQmkJduigX9Hfs';
-export const DEFAULT_BUCKET_NAME = 'student-assets';
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient, createServerClient, type CookieOptions } from '@supabase/ssr';
 
 export function getSupabaseUrl(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable.');
+    }
+    console.warn('[Supabase] Warning: NEXT_PUBLIC_SUPABASE_URL is not set.');
+    return '';
+  }
+  return url;
 }
 
 export function getSupabaseAnonKey(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!key) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable.');
+    }
+    console.warn('[Supabase] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY is not set.');
+    return '';
+  }
+  return key;
 }
 
 export function getSupabaseServiceKey(): string {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_SERVICE_ROLE_KEY;
+  if (typeof window !== 'undefined') {
+    throw new Error('Security Violation: SUPABASE_SERVICE_ROLE_KEY cannot be accessed from client-side code.');
+  }
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) {
+    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY server-side environment variable.');
+  }
+  return key;
 }
 
 export function getBucketName(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || DEFAULT_BUCKET_NAME;
+  return process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || 'student-assets';
 }
 
 export const BUCKET_NAME = getBucketName();
 
+/**
+ * Browser-side Supabase client for Client Components using @supabase/ssr
+ */
+export function createBrowserClientInstance(): SupabaseClient {
+  const url = getSupabaseUrl();
+  const anonKey = getSupabaseAnonKey();
+  return createBrowserClient(url, anonKey);
+}
+
+/**
+ * Server-side authenticated Supabase client for Server Components and Route Handlers.
+ */
+export function createServerClientInstance(cookieStore: {
+  getAll: () => { name: string; value: string }[];
+  setAll?: (cookies: { name: string; value: string; options?: CookieOptions }[]) => void;
+}): SupabaseClient {
+  const url = getSupabaseUrl();
+  const anonKey = getSupabaseAnonKey();
+
+  return createServerClient(url, anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          if (cookieStore.setAll) {
+            cookieStore.setAll(cookiesToSet);
+          }
+        } catch {
+          // Handled gracefully in read-only Server Component renders
+        }
+      },
+    },
+  });
+}
+
+/**
+ * Privileged Admin client for server-only background processes and data migration.
+ * NEVER expose to the browser.
+ */
+export function createAdminClient(): SupabaseClient {
+  const url = getSupabaseUrl();
+  const serviceKey = getSupabaseServiceKey();
+  return createSupabaseClient(url, serviceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+// Backward-compatible wrappers for existing code
 let cachedClient: SupabaseClient | null = null;
 let cachedAdmin: SupabaseClient | null = null;
 
@@ -32,23 +103,28 @@ export function getSupabaseClient(): SupabaseClient | null {
   const key = getSupabaseAnonKey();
   if (!url || !key) return null;
   if (!cachedClient) {
-    cachedClient = createClient(url, key, {
-      auth: { persistSession: false }
+    cachedClient = createSupabaseClient(url, key, {
+      auth: { persistSession: false },
     });
   }
   return cachedClient;
 }
 
 export function getSupabaseAdmin(): SupabaseClient | null {
-  const url = getSupabaseUrl();
-  const key = getSupabaseServiceKey();
-  if (!url || !key) return null;
-  if (!cachedAdmin) {
-    cachedAdmin = createClient(url, key, {
-      auth: { persistSession: false }
-    });
+  try {
+    const url = getSupabaseUrl();
+    const key = getSupabaseServiceKey();
+    if (!url || !key) return null;
+    if (!cachedAdmin) {
+      cachedAdmin = createSupabaseClient(url, key, {
+        auth: { persistSession: false },
+      });
+    }
+    return cachedAdmin;
+  } catch (err) {
+    console.warn('[Supabase] Admin client initialization notice:', (err as Error)?.message);
+    return null;
   }
-  return cachedAdmin;
 }
 
 export async function ensureBucketExists(): Promise<boolean> {
@@ -91,7 +167,7 @@ export async function uploadToSupabaseStorage(
     return {
       success: false,
       url: '',
-      error: 'Supabase is not configured. Please verify credentials.'
+      error: 'Supabase storage is not configured. Service key required.'
     };
   }
 
@@ -102,7 +178,6 @@ export async function uploadToSupabaseStorage(
     const cleanFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     const filePath = `${folder}/${Date.now()}_${cleanFileName}`;
 
-    // Upload file buffer to Supabase bucket
     const { data, error } = await admin.storage
       .from(bucket)
       .upload(filePath, fileBuffer, {
@@ -115,7 +190,6 @@ export async function uploadToSupabaseStorage(
       return { success: false, url: '', error: error.message };
     }
 
-    // Generate permanent public CDN URL
     const { data: publicUrlData } = admin.storage
       .from(bucket)
       .getPublicUrl(data.path);
@@ -135,8 +209,7 @@ export async function uploadToSupabaseStorage(
 }
 
 /**
- * Upload a base64 image (e.g. data:image/png;base64,...) to Supabase Storage
- * and return the permanent Supabase public URL.
+ * Upload a base64 image to Supabase Storage and return the permanent public URL.
  */
 export async function uploadBase64ToSupabase(
   base64Data: string,
@@ -148,7 +221,6 @@ export async function uploadBase64ToSupabase(
       return { success: false, url: '', error: 'Empty base64 data' };
     }
 
-    // If it's already a full HTTP/HTTPS URL (already stored in Supabase), keep it
     if (base64Data.startsWith('http://') || base64Data.startsWith('https://')) {
       return { success: true, url: base64Data };
     }

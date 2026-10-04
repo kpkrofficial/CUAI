@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { getAdminById, getUserById } from './db';
+import { getCurrentAuthUser } from './auth/session';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'cityapp_super_secret_jwt_key_9876543210_abcdef'
@@ -67,6 +68,13 @@ export async function verifyToken(token: string): Promise<AuthUser | null> {
  */
 export async function getCurrentUser(roleScope?: 'admin' | 'superadmin' | 'user'): Promise<AuthUser | null> {
   try {
+    // 1. Primary Source of Truth: Supabase Auth Session
+    const supabaseUser = await getCurrentAuthUser(roleScope);
+    if (supabaseUser) {
+      return supabaseUser;
+    }
+
+    // 2. Legacy fallback during progressive migration
     const cookieStore = await cookies();
     const superToken = cookieStore.get('superadmin_auth_token')?.value;
     const adminToken = cookieStore.get('admin_auth_token')?.value;

@@ -29,6 +29,7 @@ lerna-debug.log*
 # OS & Editor
 .DS_Store
 *.pem
+supabase/.temp/
 Thumbs.db
 .vscode/
 .idea/
