@@ -31,6 +31,7 @@ export const RATE_LIMIT_PRESETS = {
   SEARCH_API: { maxRequests: 80, windowSeconds: 60 } as RateLimitConfig,       // 80 searches / min
   ADMIN_GENERAL: { maxRequests: 200, windowSeconds: 60 } as RateLimitConfig,   // 200 requests / min
   STORAGE_UPLOAD: { maxRequests: 30, windowSeconds: 60 } as RateLimitConfig,   // 30 uploads / min
+  CHAT_QUERY: { maxRequests: 60, windowSeconds: 60 } as RateLimitConfig,       // 60 chat queries / min
 };
 
 /**

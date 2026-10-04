@@ -12,9 +12,12 @@
     "test:api": "tsx qa/tests/api.test.ts",
     "test:security": "tsx qa/tests/security.test.ts",
     "test:e2e": "tsx qa/tests/e2e.test.ts",
+    "test:prod": "npx tsx --env-file=.env.local tests/production-readiness.test.ts",
     "test:all": "tsx qa/run-full-suite.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.27.0",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.1",
     "@types/jszip": "^3.4.0",
     "bcryptjs": "^2.4.3",
