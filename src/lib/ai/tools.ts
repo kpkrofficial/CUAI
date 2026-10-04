@@ -262,6 +262,8 @@ export class ToolExecutionEngine {
             return { tool: name, success: false, error: `No academic records found for "${targetRoll}".` };
           }
 
+          const academic = student.canonical_academic || student.student_data?.canonical_academic;
+
           return {
             tool: name,
             success: true,
@@ -273,6 +275,14 @@ export class ToolExecutionEngine {
               ssc_marks: student.ssc_marks,
               inter_marks: student.inter_marks,
               diploma_marks: student.diploma_marks,
+              canonical_academic: academic,
+              academic_summary: {
+                ssc: academic?.ssc?.display_summary || (student.ssc_marks ? `${student.ssc_marks}/600` : null),
+                intermediate: academic?.intermediate?.display_summary || (student.inter_marks ? `${student.inter_marks}%` : null),
+                cgpa: academic?.highest_academic_cgpa !== null && academic?.highest_academic_cgpa !== undefined ? academic.highest_academic_cgpa : null,
+                grade: academic?.ssc?.grade || null,
+                classification: academic?.ssc?.classification || null,
+              },
             },
           };
         }

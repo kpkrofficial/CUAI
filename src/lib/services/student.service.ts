@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase';
 import type { AuthContext } from '@/lib/auth/types';
+import type { StudentAcademicProfile } from '@/lib/types/academic';
 
 export interface StudentRecord {
   id: string;
@@ -36,6 +37,7 @@ export interface StudentRecord {
   inter_marks?: string | null;
   diploma_marks?: string | null;
   student_data?: Record<string, any>;
+  canonical_academic?: StudentAcademicProfile;
   is_draft?: number;
   created_at?: string;
   updated_at?: string;
@@ -69,12 +71,14 @@ export interface SanitizedStudent {
   tenth_percentage?: string;
   twelfth_percentage?: string;
   cgpa?: string;
+  canonical_academic?: StudentAcademicProfile;
 }
 
 /**
  * Strips sensitive PII (Aadhaar, parents' phone, full address) for general responses
  */
 export function sanitizeStudentForChat(student: StudentRecord): Record<string, any> {
+  const academic = student.canonical_academic || student.student_data?.canonical_academic;
   return {
     id: student.id,
     name: student.name,
@@ -90,6 +94,7 @@ export function sanitizeStudentForChat(student: StudentRecord): Record<string, a
     ssc_marks: student.ssc_marks,
     inter_marks: student.inter_marks,
     diploma_marks: student.diploma_marks,
+    canonical_academic: academic,
     // Sensitive PII explicitly excluded:
     // aadhaar_no -> EXCLUDED
     // parent_phone / permanent_phone -> EXCLUDED

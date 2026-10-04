@@ -26,52 +26,70 @@ export class EligibilityEngine {
     const criteria: EligibilityCriterion[] = [];
     let passCount = 0;
 
-    // Helper to normalize academic marks / CGPA / raw scores into percentage
-    const parseAcademicScore = (rawVal: any, examType: 'inter' | 'ssc'): { percentage: number; cgpa?: number; display: string } | null => {
-      if (!rawVal) return null;
-      const str = String(rawVal).trim().toLowerCase();
-      if (str === 'c' || str.includes('first') || str.length === 0) return null;
+    // 1. Primary: Consume normalized canonical academic profile if present
+    const canonical = student.canonical_academic || student.student_data?.canonical_academic;
 
-      const numMatch = str.match(/([0-9]+(?:\.[0-9]+)?)/);
-      if (!numMatch) return null;
-      const num = parseFloat(numMatch[1]);
-      if (isNaN(num)) return null;
-
-      // Case 1: CGPA (<= 10.0 or marked as cgpa)
-      if (num <= 10.0 || str.includes('cgpa')) {
-        const pct = num * 9.5;
-        return { percentage: pct, cgpa: num, display: `${num} CGPA (${pct.toFixed(1)}%)` };
-      }
-
-      // Case 2: Percentage (10.0 < num <= 100.0)
-      if (num <= 100.0) {
-        return { percentage: num, display: `${num}%` };
-      }
-
-      // Case 3: Raw Marks (> 100)
-      const maxMarks = examType === 'inter' ? 1000 : 600;
-      const pct = (num / maxMarks) * 100;
-      return { percentage: pct, display: `${num}/${maxMarks} (${pct.toFixed(1)}%)` };
-    };
-
-    // 1. Check CGPA or Secondary marks
-    let academicScore = 0;
     let academicPassed = false;
     let scoreDetail = 'N/A';
 
-    const interScore = parseAcademicScore(student.intermediate_marks || student.inter_marks || student.twelfth_percentage, 'inter');
-    const sscScore = parseAcademicScore(student.ssc_marks || student.tenth_percentage, 'ssc');
-    const bestScore = interScore || sscScore;
+    if (canonical) {
+      const highestPct = canonical.highest_academic_percentage;
+      const highestCgpa = canonical.highest_academic_cgpa;
 
-    if (student.cgpa) {
-      const val = parseFloat(student.cgpa);
-      academicScore = isNaN(val) ? 0 : val;
-      academicPassed = academicScore >= 8.5;
-      scoreDetail = `CGPA: ${student.cgpa}`;
-    } else if (bestScore) {
-      academicScore = bestScore.percentage;
-      academicPassed = bestScore.cgpa ? bestScore.cgpa >= 8.5 : bestScore.percentage >= 85.0;
-      scoreDetail = bestScore.display;
+      const cgpaPassed = highestCgpa !== null && highestCgpa >= 8.5;
+      const pctPassed = highestPct !== null && highestPct >= 85.0;
+      academicPassed = cgpaPassed || pctPassed;
+
+      // Construct verified score detail directly from canonical records
+      const details: string[] = [];
+      if (canonical.intermediate?.display_summary) {
+        details.push(`Intermediate: ${canonical.intermediate.display_summary}`);
+      }
+      if (canonical.ssc?.display_summary) {
+        details.push(`SSC: ${canonical.ssc.display_summary}`);
+      }
+      if (canonical.prior_degree?.display_summary) {
+        details.push(`Prior Degree: ${canonical.prior_degree.display_summary}`);
+      }
+
+      scoreDetail = details.length > 0 ? details.join(', ') : 'No verified academic marks recorded';
+    } else {
+      // Fallback for non-normalized fixtures or synthetic inputs
+      const parseAcademicScore = (rawVal: any, examType: 'inter' | 'ssc'): { percentage: number; cgpa?: number; display: string } | null => {
+        if (!rawVal) return null;
+        const str = String(rawVal).trim().toLowerCase();
+        if (str === 'c' || str.includes('first') || str.length === 0) return null;
+
+        const numMatch = str.match(/([0-9]+(?:\.[0-9]+)?)/);
+        if (!numMatch) return null;
+        const num = parseFloat(numMatch[1]);
+        if (isNaN(num)) return null;
+
+        if (num <= 10.0 || str.includes('cgpa')) {
+          const pct = num * 9.5;
+          return { percentage: pct, cgpa: num, display: `${num} CGPA (${pct.toFixed(1)}%)` };
+        }
+        if (num <= 100.0) {
+          return { percentage: num, display: `${num}%` };
+        }
+        const maxMarks = examType === 'inter' ? 1000 : 600;
+        const pct = (num / maxMarks) * 100;
+        return { percentage: pct, display: `${num}/${maxMarks} (${pct.toFixed(1)}%)` };
+      };
+
+      const interScore = parseAcademicScore(student.intermediate_marks || student.inter_marks || student.twelfth_percentage, 'inter');
+      const sscScore = parseAcademicScore(student.ssc_marks || student.tenth_percentage, 'ssc');
+      const bestScore = interScore || sscScore;
+
+      if (student.cgpa) {
+        const val = parseFloat(student.cgpa);
+        const academicScore = isNaN(val) ? 0 : val;
+        academicPassed = academicScore >= 8.5;
+        scoreDetail = `CGPA: ${student.cgpa}`;
+      } else if (bestScore) {
+        academicPassed = bestScore.cgpa ? bestScore.cgpa >= 8.5 : bestScore.percentage >= 85.0;
+        scoreDetail = bestScore.display;
+      }
     }
 
     criteria.push({
@@ -133,7 +151,12 @@ export class EligibilityEngine {
     // CGPA >= 7.0
     let cgpaPassed = false;
     let cgpaVal = 0;
-    if (student.cgpa) {
+    const canonical = student.canonical_academic || student.student_data?.canonical_academic;
+
+    if (canonical && canonical.highest_academic_cgpa !== null && canonical.highest_academic_cgpa !== undefined) {
+      cgpaVal = canonical.highest_academic_cgpa;
+      cgpaPassed = cgpaVal >= 7.0;
+    } else if (student.cgpa) {
       cgpaVal = parseFloat(student.cgpa) || 0;
       cgpaPassed = cgpaVal >= 7.0;
     } else {
@@ -143,13 +166,14 @@ export class EligibilityEngine {
     criteria.push({
       name: 'Placement Minimum CGPA',
       required: 'CGPA >= 7.0',
-      studentValue: student.cgpa ? `${student.cgpa}` : 'In progress',
+      studentValue: cgpaVal > 0 ? `${cgpaVal.toFixed(2)} CGPA` : (student.cgpa ? `${student.cgpa}` : 'In progress'),
       passed: cgpaPassed,
     });
     if (cgpaPassed) passCount++;
 
     // Standing backlogs
-    const arrears = parseInt(student.standing_arrears || '0', 10);
+    const arrearsRaw = canonical?.standing_arrears ?? student.standing_arrears ?? '0';
+    const arrears = parseInt(String(arrearsRaw), 10) || 0;
     const arrearsPassed = arrears === 0;
     criteria.push({
       name: 'No Active Arrears',
