@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "language": "te-en",
+  "transliterated_lexicon": {
+    "naa": "my",
+    "na": "my",
+    "naku": "for me",
+    "naaku": "for me",
+    "nenu": "I",
+    "enti": "what is",
+    "entha": "what is the value of",
+    "cheppu": "tell me",
+    "cheppandi": "please tell me",
+    "chupinchu": "show me",
+    "chupandi": "please show me",
+    "undha": "is it available",
+    "undi": "is present",
+    "kavali": "required",
+    "em": "what",
+    "emi": "what",
+    "eppudu": "when is",
+    "ki": "for",
+    "batti": "based on",
+    "aa": "is it"
+  },
+  "canonical_phrases": [
+    {
+      "source_pattern": "(naa|na)\\s+(details|vivaralu)\\s+(enti|cheppu|chupinchu)",
+      "target_normalized": "what are my details",
+      "intent": "PROFILE_SELF",
+      "domain": "profile"
+    },
+    {
+      "source_pattern": "(naa|na)\\s+(roll\\s*no|roll\\s*number)\\s+(enti|cheppu)",
+      "target_normalized": "what is my roll number",
+      "intent": "PROFILE_SELF",
+      "domain": "profile"
+    },
+    {
+      "source_pattern": "(naa|na)\\s+marks\\s+(cheppu|chupinchu|enti|entha)",
+      "target_normalized": "show my academic marks",
+      "intent": "ACADEMIC_SELF",
+      "domain": "academic"
+    },
+    {
+      "source_pattern": "(naa|na)\\s+ssc\\s+marks\\s+(entha|enti|cheppu)",
+      "target_normalized": "what are my SSC marks",
+      "intent": "ACADEMIC_SELF",
+      "domain": "academic"
+    },
+    {
+      "source_pattern": "(my|naa|na)\\s+inter(mediate)?\\s+(perc(entage)?|marks)\\s+(enti|entha|cheppu)",
+      "target_normalized": "what is my intermediate percentage",
+      "intent": "ACADEMIC_SELF",
+      "domain": "academic"
+    },
+    {
+      "source_pattern": "((scholarship\\s+ki\\s+)?(nenu\\s+)?|\\b)eligible\\s+(aa|undha)",
+      "target_normalized": "am I eligible for the scholarship",
+      "intent": "ELIGIBILITY_SELF",
+      "domain": "scholarship"
+    },
+    {
+      "source_pattern": "marks?\\s+batti\\s+eligible\\s+(aa|undha)",
+      "target_normalized": "am I eligible based on my marks",
+      "intent": "ELIGIBILITY_SELF",
+      "domain": "scholarship"
+    },
+    {
+      "source_pattern": "((naa|na)\\s+)?attendance\\s+(entha(\\s+undi)?|cheppu)",
+      "target_normalized": "what is my attendance",
+      "intent": "ATTENDANCE_SELF",
+      "domain": "attendance"
+    },
+    {
+      "source_pattern": "(my|naa|na)\\s+application(\\s+status)?\\s+(enti|cheppu)",
+      "target_normalized": "what is my application status",
+      "intent": "APPLICATION_SELF",
+      "domain": "application"
+    },
+    {
+      "source_pattern": "hostel\\s+room\\s+(cheppu|enti|details)",
+      "target_normalized": "what is my hostel room",
+      "intent": "HOSTEL_SELF",
+      "domain": "hostel"
+    },
+    {
+      "source_pattern": "admission\\s+ki\\s+(em|emi)?\\s*documents?\\s+kavali",
+      "target_normalized": "what documents are required for admission",
+      "intent": "ADMISSION_DOCUMENTS",
+      "domain": "admissions"
+    },
+    {
+      "source_pattern": "library\\s+timings?\\s+(enti|eppudu)",
+      "target_normalized": "what are the library timings",
+      "intent": "KNOWLEDGE_SEARCH",
+      "domain": "campus"
+    }
+  ]
+}

@@ -8,7 +8,7 @@
       "description": "First Year (26HT1A43 Batch 2026-2030)",
       "is_form_active": 1,
       "form_token": "token_1st-year_secret",
-      "created_at": "2026-09-25T15:27:12.741+00:00",
+      "created_at": "2026-10-04T15:16:50.87+00:00",
       "updated_at": "2026-09-25T13:53:19.352+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -18,9 +18,9 @@
       "slug": "2nd-year",
       "year_label": "25HT1A43 2025-2029",
       "description": "Second Year (25HT1A43 Batch 2025-2029)",
-      "is_form_active": 0,
+      "is_form_active": 1,
       "form_token": "token_2nd-year_secret",
-      "created_at": "2026-09-25T15:27:12.741+00:00",
+      "created_at": "2026-10-04T15:16:50.871+00:00",
       "updated_at": "2026-09-25T13:53:19.352+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -32,7 +32,7 @@
       "description": "Third Year (24HT1A43 Batch 2024-2028)",
       "is_form_active": 1,
       "form_token": "token_3rd-year_secret",
-      "created_at": "2026-09-25T15:27:12.741+00:00",
+      "created_at": "2026-10-04T15:16:50.871+00:00",
       "updated_at": "2026-09-25T13:53:19.352+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -44,7 +44,7 @@
       "description": "Fourth Year (23HT1A43 Batch 2023-2027)",
       "is_form_active": 1,
       "form_token": "token_4th-year_secret",
-      "created_at": "2026-09-25T15:27:12.741+00:00",
+      "created_at": "2026-10-04T15:16:50.871+00:00",
       "updated_at": "2026-09-25T13:53:19.352+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     }
@@ -377,7 +377,7 @@
       "created_at": "2026-09-25T16:43:25.761+00:00",
       "updated_at": "2026-09-25T16:43:25.761+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c",
-      "account_id": null,
+      "account_id": "adbf5c67-bb2e-4c92-8f94-8537c66de8f9",
       "student_data": {
         "id": "std_1790354604465_i2x0v",
         "dob": "11-10-2006",
@@ -1586,34 +1586,8 @@
   ],
   "form_configs": [
     {
-      "id": "fc_4th-year_name",
-      "folder_id": "folder_4th_year",
-      "section_name": "Student Details",
-      "field_name": "name",
-      "field_label": "Name of the Student",
-      "field_type": "text",
-      "is_required": 1,
-      "options_json": "[]",
-      "display_order": 1,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_1st-year_name",
       "folder_id": "folder_1st_year",
-      "section_name": "Student Details",
-      "field_name": "name",
-      "field_label": "Name of the Student",
-      "field_type": "text",
-      "is_required": 1,
-      "options_json": "[]",
-      "display_order": 1,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_name",
-      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "name",
       "field_label": "Name of the Student",
@@ -1638,8 +1612,47 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
+      "id": "fc_4th-year_name",
+      "folder_id": "folder_4th_year",
+      "section_name": "Student Details",
+      "field_name": "name",
+      "field_label": "Name of the Student",
+      "field_type": "text",
+      "is_required": 1,
+      "options_json": "[]",
+      "display_order": 1,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_name",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Student Details",
+      "field_name": "name",
+      "field_label": "Name of the Student",
+      "field_type": "text",
+      "is_required": 1,
+      "options_json": "[]",
+      "display_order": 1,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
       "id": "fc_4th-year_roll_number",
       "folder_id": "folder_4th_year",
+      "section_name": "Student Details",
+      "field_name": "roll_number",
+      "field_label": "Regd. No.",
+      "field_type": "text",
+      "is_required": 1,
+      "options_json": "[]",
+      "display_order": 2,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_roll_number",
+      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "roll_number",
       "field_label": "Regd. No.",
@@ -1677,34 +1690,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_roll_number",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Student Details",
-      "field_name": "roll_number",
-      "field_label": "Regd. No.",
-      "field_type": "text",
-      "is_required": 1,
-      "options_json": "[]",
-      "display_order": 2,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_4th-year_branch",
       "folder_id": "folder_4th_year",
-      "section_name": "Student Details",
-      "field_name": "branch",
-      "field_label": "Branch / Department",
-      "field_type": "text",
-      "is_required": 1,
-      "options_json": "[]",
-      "display_order": 3,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_2nd-year_branch",
-      "folder_id": "folder_2nd_year",
       "section_name": "Student Details",
       "field_name": "branch",
       "field_label": "Branch / Department",
@@ -1729,6 +1716,19 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
+      "id": "fc_2nd-year_branch",
+      "folder_id": "folder_2nd_year",
+      "section_name": "Student Details",
+      "field_name": "branch",
+      "field_label": "Branch / Department",
+      "field_type": "text",
+      "is_required": 1,
+      "options_json": "[]",
+      "display_order": 3,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
       "id": "fc_3rd-year_branch",
       "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
@@ -1738,6 +1738,19 @@
       "is_required": 1,
       "options_json": "[]",
       "display_order": 3,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_section",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Student Details",
+      "field_name": "section",
+      "field_label": "Section",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 4,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -1781,34 +1794,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_section",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Student Details",
-      "field_name": "section",
-      "field_label": "Section",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 4,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_1st-year_college",
       "folder_id": "folder_1st_year",
-      "section_name": "Student Details",
-      "field_name": "college",
-      "field_label": "College / Institute",
-      "field_type": "text",
-      "is_required": 1,
-      "options_json": "[]",
-      "display_order": 5,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_college",
-      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "college",
       "field_label": "College / Institute",
@@ -1835,6 +1822,19 @@
     {
       "id": "fc_2nd-year_college",
       "folder_id": "folder_2nd_year",
+      "section_name": "Student Details",
+      "field_name": "college",
+      "field_label": "College / Institute",
+      "field_type": "text",
+      "is_required": 1,
+      "options_json": "[]",
+      "display_order": 5,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_college",
+      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "college",
       "field_label": "College / Institute",
@@ -1898,19 +1898,6 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_dob",
-      "folder_id": "folder_2nd_year",
-      "section_name": "Student Details",
-      "field_name": "dob",
-      "field_label": "Date of Birth (dd/mm/yyyy)",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 7,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_3rd-year_dob",
       "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
@@ -1950,15 +1937,15 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_blood_group",
-      "folder_id": "folder_1st_year",
+      "id": "fc_2nd-year_dob",
+      "folder_id": "folder_2nd_year",
       "section_name": "Student Details",
-      "field_name": "blood_group",
-      "field_label": "Blood Group",
-      "field_type": "select",
+      "field_name": "dob",
+      "field_label": "Date of Birth (dd/mm/yyyy)",
+      "field_type": "text",
       "is_required": 0,
-      "options_json": "[\"A+\",\"A-\",\"B+\",\"B-\",\"O+\",\"O-\",\"AB+\",\"AB-\"]",
-      "display_order": 8,
+      "options_json": "[]",
+      "display_order": 7,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -1976,8 +1963,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_blood_group",
-      "folder_id": "folder_4th_year",
+      "id": "fc_1st-year_blood_group",
+      "folder_id": "folder_1st_year",
       "section_name": "Student Details",
       "field_name": "blood_group",
       "field_label": "Blood Group",
@@ -2002,6 +1989,19 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
+      "id": "fc_4th-year_blood_group",
+      "folder_id": "folder_4th_year",
+      "section_name": "Student Details",
+      "field_name": "blood_group",
+      "field_label": "Blood Group",
+      "field_type": "select",
+      "is_required": 0,
+      "options_json": "[\"A+\",\"A-\",\"B+\",\"B-\",\"O+\",\"O-\",\"AB+\",\"AB-\"]",
+      "display_order": 8,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
       "id": "fc_1st-year_aadhaar_no",
       "folder_id": "folder_1st_year",
       "section_name": "Student Details",
@@ -2015,8 +2015,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_aadhaar_no",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_3rd-year_aadhaar_no",
+      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "aadhaar_no",
       "field_label": "Aadhaar No.",
@@ -2041,8 +2041,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_aadhaar_no",
-      "folder_id": "folder_3rd_year",
+      "id": "fc_2nd-year_aadhaar_no",
+      "folder_id": "folder_2nd_year",
       "section_name": "Student Details",
       "field_name": "aadhaar_no",
       "field_label": "Aadhaar No.",
@@ -2050,6 +2050,32 @@
       "is_required": 0,
       "options_json": "[]",
       "display_order": 9,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_father_name",
+      "folder_id": "folder_1st_year",
+      "section_name": "Student Details",
+      "field_name": "father_name",
+      "field_label": "Father's Name",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 10,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_father_name",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Student Details",
+      "field_name": "father_name",
+      "field_label": "Father's Name",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 10,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -2080,28 +2106,15 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_father_name",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Student Details",
-      "field_name": "father_name",
-      "field_label": "Father's Name",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 10,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_1st-year_father_name",
+      "id": "fc_1st-year_father_occupation",
       "folder_id": "folder_1st_year",
       "section_name": "Student Details",
-      "field_name": "father_name",
-      "field_label": "Father's Name",
+      "field_name": "father_occupation",
+      "field_label": "Father's Occupation",
       "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
-      "display_order": 10,
+      "display_order": 11,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -2119,8 +2132,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_father_occupation",
-      "folder_id": "folder_1st_year",
+      "id": "fc_3rd-year_father_occupation",
+      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "father_occupation",
       "field_label": "Father's Occupation",
@@ -2134,19 +2147,6 @@
     {
       "id": "fc_4th-year_father_occupation",
       "folder_id": "folder_4th_year",
-      "section_name": "Student Details",
-      "field_name": "father_occupation",
-      "field_label": "Father's Occupation",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 11,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_father_occupation",
-      "folder_id": "folder_3rd_year",
       "section_name": "Student Details",
       "field_name": "father_occupation",
       "field_label": "Father's Occupation",
@@ -2210,21 +2210,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_mother_occupation",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Student Details",
-      "field_name": "mother_occupation",
-      "field_label": "Mother's Occupation",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 13,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_4th-year_mother_occupation",
-      "folder_id": "folder_4th_year",
+      "id": "fc_2nd-year_mother_occupation",
+      "folder_id": "folder_2nd_year",
       "section_name": "Student Details",
       "field_name": "mother_occupation",
       "field_label": "Mother's Occupation",
@@ -2249,8 +2236,21 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_mother_occupation",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_3rd-year_mother_occupation",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Student Details",
+      "field_name": "mother_occupation",
+      "field_label": "Mother's Occupation",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 13,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_4th-year_mother_occupation",
+      "folder_id": "folder_4th_year",
       "section_name": "Student Details",
       "field_name": "mother_occupation",
       "field_label": "Mother's Occupation",
@@ -2288,19 +2288,6 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_reservation_category",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Student Details",
-      "field_name": "reservation_category",
-      "field_label": "Reservation Category",
-      "field_type": "select",
-      "is_required": 0,
-      "options_json": "[\"OC / General\",\"EWS\",\"BC-A\",\"BC-B\",\"BC-C\",\"BC-D\",\"BC-E\",\"SC\",\"ST\",\"Minority\"]",
-      "display_order": 14,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_4th-year_reservation_category",
       "folder_id": "folder_4th_year",
       "section_name": "Student Details",
@@ -2314,8 +2301,21 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_mode_of_transport",
-      "folder_id": "folder_4th_year",
+      "id": "fc_3rd-year_reservation_category",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Student Details",
+      "field_name": "reservation_category",
+      "field_label": "Reservation Category",
+      "field_type": "select",
+      "is_required": 0,
+      "options_json": "[\"OC / General\",\"EWS\",\"BC-A\",\"BC-B\",\"BC-C\",\"BC-D\",\"BC-E\",\"SC\",\"ST\",\"Minority\"]",
+      "display_order": 14,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_mode_of_transport",
+      "folder_id": "folder_1st_year",
       "section_name": "Student Details",
       "field_name": "mode_of_transport",
       "field_label": "Mode of Transport",
@@ -2327,8 +2327,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_mode_of_transport",
-      "folder_id": "folder_1st_year",
+      "id": "fc_4th-year_mode_of_transport",
+      "folder_id": "folder_4th_year",
       "section_name": "Student Details",
       "field_name": "mode_of_transport",
       "field_label": "Mode of Transport",
@@ -2418,8 +2418,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_permanent_address",
-      "folder_id": "folder_4th_year",
+      "id": "fc_2nd-year_permanent_address",
+      "folder_id": "folder_2nd_year",
       "section_name": "Address Details",
       "field_name": "permanent_address",
       "field_label": "Permanent Address",
@@ -2431,8 +2431,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_permanent_address",
-      "folder_id": "folder_3rd_year",
+      "id": "fc_4th-year_permanent_address",
+      "folder_id": "folder_4th_year",
       "section_name": "Address Details",
       "field_name": "permanent_address",
       "field_label": "Permanent Address",
@@ -2457,8 +2457,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_permanent_address",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_3rd-year_permanent_address",
+      "folder_id": "folder_3rd_year",
       "section_name": "Address Details",
       "field_name": "permanent_address",
       "field_label": "Permanent Address",
@@ -2472,6 +2472,19 @@
     {
       "id": "fc_3rd-year_present_address",
       "folder_id": "folder_3rd_year",
+      "section_name": "Address Details",
+      "field_name": "present_address",
+      "field_label": "Present Address",
+      "field_type": "textarea",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 18,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_4th-year_present_address",
+      "folder_id": "folder_4th_year",
       "section_name": "Address Details",
       "field_name": "present_address",
       "field_label": "Present Address",
@@ -2509,21 +2522,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_present_address",
-      "folder_id": "folder_4th_year",
-      "section_name": "Address Details",
-      "field_name": "present_address",
-      "field_label": "Present Address",
-      "field_type": "textarea",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 18,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_1st-year_permanent_pincode",
-      "folder_id": "folder_1st_year",
+      "id": "fc_2nd-year_permanent_pincode",
+      "folder_id": "folder_2nd_year",
       "section_name": "Address Details",
       "field_name": "permanent_pincode",
       "field_label": "Permanent PIN Code",
@@ -2535,8 +2535,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_permanent_pincode",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_1st-year_permanent_pincode",
+      "folder_id": "folder_1st_year",
       "section_name": "Address Details",
       "field_name": "permanent_pincode",
       "field_label": "Permanent PIN Code",
@@ -2574,34 +2574,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_present_pincode",
-      "folder_id": "folder_1st_year",
-      "section_name": "Address Details",
-      "field_name": "present_pincode",
-      "field_label": "Present PIN Code",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 20,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_4th-year_present_pincode",
       "folder_id": "folder_4th_year",
-      "section_name": "Address Details",
-      "field_name": "present_pincode",
-      "field_label": "Present PIN Code",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 20,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_present_pincode",
-      "folder_id": "folder_3rd_year",
       "section_name": "Address Details",
       "field_name": "present_pincode",
       "field_label": "Present PIN Code",
@@ -2626,8 +2600,34 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_permanent_phone",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_1st-year_present_pincode",
+      "folder_id": "folder_1st_year",
+      "section_name": "Address Details",
+      "field_name": "present_pincode",
+      "field_label": "Present PIN Code",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 20,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_present_pincode",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Address Details",
+      "field_name": "present_pincode",
+      "field_label": "Present PIN Code",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 20,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_4th-year_permanent_phone",
+      "folder_id": "folder_4th_year",
       "section_name": "Address Details",
       "field_name": "permanent_phone",
       "field_label": "Permanent Phone No.",
@@ -2652,8 +2652,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_permanent_phone",
-      "folder_id": "folder_4th_year",
+      "id": "fc_2nd-year_permanent_phone",
+      "folder_id": "folder_2nd_year",
       "section_name": "Address Details",
       "field_name": "permanent_phone",
       "field_label": "Permanent Phone No.",
@@ -2678,8 +2678,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_present_phone",
-      "folder_id": "folder_4th_year",
+      "id": "fc_3rd-year_present_phone",
+      "folder_id": "folder_3rd_year",
       "section_name": "Address Details",
       "field_name": "present_phone",
       "field_label": "Present Phone No.",
@@ -2704,19 +2704,6 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_present_phone",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Address Details",
-      "field_name": "present_phone",
-      "field_label": "Present Phone No.",
-      "field_type": "tel",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 22,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_1st-year_present_phone",
       "folder_id": "folder_1st_year",
       "section_name": "Address Details",
@@ -2730,15 +2717,15 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_email",
+      "id": "fc_4th-year_present_phone",
       "folder_id": "folder_4th_year",
-      "section_name": "Contact",
-      "field_name": "email",
-      "field_label": "E-mail ID",
-      "field_type": "email",
-      "is_required": 1,
+      "section_name": "Address Details",
+      "field_name": "present_phone",
+      "field_label": "Present Phone No.",
+      "field_type": "tel",
+      "is_required": 0,
       "options_json": "[]",
-      "display_order": 23,
+      "display_order": 22,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -2756,8 +2743,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_email",
-      "folder_id": "folder_3rd_year",
+      "id": "fc_4th-year_email",
+      "folder_id": "folder_4th_year",
       "section_name": "Contact",
       "field_name": "email",
       "field_label": "E-mail ID",
@@ -2782,42 +2769,16 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_ssc_marks",
+      "id": "fc_3rd-year_email",
       "folder_id": "folder_3rd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "ssc_marks",
-      "field_label": "SSC Marks",
-      "field_type": "text",
-      "is_required": 0,
+      "section_name": "Contact",
+      "field_name": "email",
+      "field_label": "E-mail ID",
+      "field_type": "email",
+      "is_required": 1,
       "options_json": "[]",
-      "display_order": 24,
+      "display_order": 23,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_2nd-year_ssc_marks",
-      "folder_id": "folder_2nd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "ssc_marks",
-      "field_label": "SSC Marks",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 24,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_previous_course",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_course",
-      "field_label": "Course of Study",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 24,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
@@ -2834,6 +2795,19 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
+      "id": "fc_2nd-year_ssc_marks",
+      "folder_id": "folder_2nd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "ssc_marks",
+      "field_label": "SSC Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 24,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
       "id": "fc_4th-year_ssc_marks",
       "folder_id": "folder_4th_year",
       "section_name": "Previous Academic Record",
@@ -2847,29 +2821,16 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_previous_course",
-      "folder_id": "folder_4th_year",
+      "id": "fc_3rd-year_ssc_marks",
+      "folder_id": "folder_3rd_year",
       "section_name": "Previous Academic Record",
-      "field_name": "previous_course",
-      "field_label": "Course of Study",
+      "field_name": "ssc_marks",
+      "field_label": "SSC Marks",
       "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
       "display_order": 24,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_1st-year_previous_course",
-      "folder_id": "folder_1st_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_course",
-      "field_label": "Course of Study",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 24,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
@@ -2886,41 +2847,41 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_ssc_hall_ticket_no",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_1st-year_previous_course",
+      "folder_id": "folder_1st_year",
       "section_name": "Previous Academic Record",
-      "field_name": "ssc_hall_ticket_no",
-      "field_label": "SSC Hall Ticket No.",
+      "field_name": "previous_course",
+      "field_label": "Course of Study",
       "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
-      "display_order": 25,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "display_order": 24,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_ssc_hall_ticket_no",
+      "id": "fc_4th-year_previous_course",
+      "folder_id": "folder_4th_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_course",
+      "field_label": "Course of Study",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 24,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_previous_course",
       "folder_id": "folder_3rd_year",
       "section_name": "Previous Academic Record",
-      "field_name": "ssc_hall_ticket_no",
-      "field_label": "SSC Hall Ticket No.",
+      "field_name": "previous_course",
+      "field_label": "Course of Study",
       "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
-      "display_order": 25,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_2nd-year_previous_max_marks",
-      "folder_id": "folder_2nd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_max_marks",
-      "field_label": "Max. Marks",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 25,
+      "display_order": 24,
       "created_at": "2026-09-25T14:56:59.198814+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -2938,8 +2899,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_ssc_hall_ticket_no",
-      "folder_id": "folder_4th_year",
+      "id": "fc_3rd-year_ssc_hall_ticket_no",
+      "folder_id": "folder_3rd_year",
       "section_name": "Previous Academic Record",
       "field_name": "ssc_hall_ticket_no",
       "field_label": "SSC Hall Ticket No.",
@@ -2964,16 +2925,29 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_previous_max_marks",
-      "folder_id": "folder_1st_year",
+      "id": "fc_4th-year_ssc_hall_ticket_no",
+      "folder_id": "folder_4th_year",
       "section_name": "Previous Academic Record",
-      "field_name": "previous_max_marks",
-      "field_label": "Max. Marks",
+      "field_name": "ssc_hall_ticket_no",
+      "field_label": "SSC Hall Ticket No.",
       "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
       "display_order": 25,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_2nd-year_ssc_hall_ticket_no",
+      "folder_id": "folder_2nd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "ssc_hall_ticket_no",
+      "field_label": "SSC Hall Ticket No.",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 25,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
@@ -2987,6 +2961,97 @@
       "options_json": "[]",
       "display_order": 25,
       "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_previous_max_marks",
+      "folder_id": "folder_1st_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_max_marks",
+      "field_label": "Max. Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 25,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_2nd-year_previous_max_marks",
+      "folder_id": "folder_2nd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_max_marks",
+      "field_label": "Max. Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 25,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_2nd-year_intermediate_marks",
+      "folder_id": "folder_2nd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "intermediate_marks",
+      "field_label": "Intermediate Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 26,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_previous_marks_obtained",
+      "folder_id": "folder_1st_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_marks_obtained",
+      "field_label": "Grade / Marks Obtained",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 26,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_previous_marks_obtained",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_marks_obtained",
+      "field_label": "Grade / Marks Obtained",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 26,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_intermediate_marks",
+      "folder_id": "folder_1st_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "intermediate_marks",
+      "field_label": "Intermediate Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 26,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_3rd-year_intermediate_marks",
+      "folder_id": "folder_3rd_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "intermediate_marks",
+      "field_label": "Intermediate Marks",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 26,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
@@ -3029,71 +3094,6 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_previous_marks_obtained",
-      "folder_id": "folder_1st_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_marks_obtained",
-      "field_label": "Grade / Marks Obtained",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 26,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_previous_marks_obtained",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_marks_obtained",
-      "field_label": "Grade / Marks Obtained",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 26,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_3rd-year_intermediate_marks",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "intermediate_marks",
-      "field_label": "Intermediate Marks",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 26,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_1st-year_intermediate_marks",
-      "folder_id": "folder_1st_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "intermediate_marks",
-      "field_label": "Intermediate Marks",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 26,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_2nd-year_intermediate_marks",
-      "folder_id": "folder_2nd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "intermediate_marks",
-      "field_label": "Intermediate Marks",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 26,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_3rd-year_previous_sno",
       "folder_id": "folder_3rd_year",
       "section_name": "Previous Academic Record",
@@ -3107,34 +3107,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_4th-year_previous_sno",
-      "folder_id": "folder_4th_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "previous_sno",
-      "field_label": "S.No. / Hall Ticket No.",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 27,
-      "created_at": "2026-09-25T14:56:59.198814+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_3rd-year_intermediate_hall_ticket_no",
       "folder_id": "folder_3rd_year",
-      "section_name": "Previous Academic Record",
-      "field_name": "intermediate_hall_ticket_no",
-      "field_label": "Intermediate Hall Ticket Number",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 27,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_1st-year_intermediate_hall_ticket_no",
-      "folder_id": "folder_1st_year",
       "section_name": "Previous Academic Record",
       "field_name": "intermediate_hall_ticket_no",
       "field_label": "Intermediate Hall Ticket Number",
@@ -3185,8 +3159,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_previous_sno",
-      "folder_id": "folder_1st_year",
+      "id": "fc_4th-year_previous_sno",
+      "folder_id": "folder_4th_year",
       "section_name": "Previous Academic Record",
       "field_name": "previous_sno",
       "field_label": "S.No. / Hall Ticket No.",
@@ -3198,16 +3172,29 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_achievements",
-      "folder_id": "folder_3rd_year",
-      "section_name": "Other Information",
-      "field_name": "achievements",
-      "field_label": "Any Other Achievements",
-      "field_type": "textarea",
+      "id": "fc_1st-year_intermediate_hall_ticket_no",
+      "folder_id": "folder_1st_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "intermediate_hall_ticket_no",
+      "field_label": "Intermediate Hall Ticket Number",
+      "field_type": "text",
       "is_required": 0,
       "options_json": "[]",
-      "display_order": 28,
+      "display_order": 27,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_previous_sno",
+      "folder_id": "folder_1st_year",
+      "section_name": "Previous Academic Record",
+      "field_name": "previous_sno",
+      "field_label": "S.No. / Hall Ticket No.",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 27,
+      "created_at": "2026-09-25T14:56:59.198814+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
@@ -3250,15 +3237,15 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_extracurricular",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_3rd-year_achievements",
+      "folder_id": "folder_3rd_year",
       "section_name": "Other Information",
-      "field_name": "extracurricular",
-      "field_label": "Extra-curricular Activities",
+      "field_name": "achievements",
+      "field_label": "Any Other Achievements",
       "field_type": "textarea",
       "is_required": 0,
       "options_json": "[]",
-      "display_order": 29,
+      "display_order": 28,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -3278,6 +3265,19 @@
     {
       "id": "fc_1st-year_extracurricular",
       "folder_id": "folder_1st_year",
+      "section_name": "Other Information",
+      "field_name": "extracurricular",
+      "field_label": "Extra-curricular Activities",
+      "field_type": "textarea",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 29,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_2nd-year_extracurricular",
+      "folder_id": "folder_2nd_year",
       "section_name": "Other Information",
       "field_name": "extracurricular",
       "field_label": "Extra-curricular Activities",
@@ -3328,19 +3328,6 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_hobbies",
-      "folder_id": "folder_1st_year",
-      "section_name": "Other Information",
-      "field_name": "hobbies",
-      "field_label": "Hobbies",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 30,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
       "id": "fc_4th-year_hobbies",
       "folder_id": "folder_4th_year",
       "section_name": "Other Information",
@@ -3354,8 +3341,21 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_3rd-year_sports",
-      "folder_id": "folder_3rd_year",
+      "id": "fc_1st-year_hobbies",
+      "folder_id": "folder_1st_year",
+      "section_name": "Other Information",
+      "field_name": "hobbies",
+      "field_label": "Hobbies",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 30,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_sports",
+      "folder_id": "folder_1st_year",
       "section_name": "Other Information",
       "field_name": "sports",
       "field_label": "Sports Interested",
@@ -3393,8 +3393,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_sports",
-      "folder_id": "folder_1st_year",
+      "id": "fc_3rd-year_sports",
+      "folder_id": "folder_3rd_year",
       "section_name": "Other Information",
       "field_name": "sports",
       "field_label": "Sports Interested",
@@ -3402,19 +3402,6 @@
       "is_required": 0,
       "options_json": "[]",
       "display_order": 31,
-      "created_at": "2026-09-25T13:55:30.746925+00:00",
-      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
-    },
-    {
-      "id": "fc_4th-year_skills",
-      "folder_id": "folder_4th_year",
-      "section_name": "Other Information",
-      "field_name": "skills",
-      "field_label": "Technical Skills (comma separated)",
-      "field_type": "text",
-      "is_required": 0,
-      "options_json": "[]",
-      "display_order": 32,
       "created_at": "2026-09-25T13:55:30.746925+00:00",
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
@@ -3432,8 +3419,8 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_1st-year_skills",
-      "folder_id": "folder_1st_year",
+      "id": "fc_2nd-year_skills",
+      "folder_id": "folder_2nd_year",
       "section_name": "Other Information",
       "field_name": "skills",
       "field_label": "Technical Skills (comma separated)",
@@ -3445,8 +3432,21 @@
       "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
     },
     {
-      "id": "fc_2nd-year_skills",
-      "folder_id": "folder_2nd_year",
+      "id": "fc_4th-year_skills",
+      "folder_id": "folder_4th_year",
+      "section_name": "Other Information",
+      "field_name": "skills",
+      "field_label": "Technical Skills (comma separated)",
+      "field_type": "text",
+      "is_required": 0,
+      "options_json": "[]",
+      "display_order": 32,
+      "created_at": "2026-09-25T13:55:30.746925+00:00",
+      "campus_id": "de1a8da7-a875-4648-94c8-3e642ed6c45c"
+    },
+    {
+      "id": "fc_1st-year_skills",
+      "folder_id": "folder_1st_year",
       "section_name": "Other Information",
       "field_name": "skills",
       "field_label": "Technical Skills (comma separated)",
@@ -3478,30 +3478,21 @@
     {
       "id": "admin_super_01",
       "email": "superadmin@com",
-      "password_hash": "$2a$10$uF0zd7air/AOtpm.QEBTiO0ooa8p5mun2lgbvlxgvFABlUKGmBDqK",
+      "password_hash": "$2a$10$lX9/k1iuovUjhkX.rp8/buLZXxB35bNTfXdhKn6qU9hX89RR1qpuy",
       "name": "Master Super Admin",
       "role": "superadmin",
-      "created_at": "2026-09-25T15:27:15.645+00:00"
+      "created_at": "2026-10-04T15:16:51.086+00:00"
     },
     {
       "id": "admin_campus_01",
       "email": "admin@com",
-      "password_hash": "$2a$10$HQ2V.c4u3eLoHzPhHcBSX.bplgw1Do/vomlwgfgGALNeup/Gyun7.",
+      "password_hash": "$2a$10$xF4aO6SA6ovVSlOclDMwN.htxQuwBa/xr9moXjSjoWq0H2SyDGG/K",
       "name": "Campus Administrator",
       "role": "admin",
-      "created_at": "2026-09-25T15:27:15.645+00:00"
+      "created_at": "2026-10-04T15:16:51.086+00:00"
     }
   ],
   "users": [
-    {
-      "id": "usr_000",
-      "email": "m@com",
-      "password_hash": "$2a$10$f6fvVRd6yOV2b0E965N5L..ZAnV87.feHUt2PA1iHJ5ZWXPcyeKRK",
-      "name": "Student User",
-      "role": "user",
-      "status": "active",
-      "created_at": "2026-09-25T15:27:16.246+00:00"
-    },
     {
       "id": "user_1790397143260_u9jeb",
       "email": "ramya@cuai.com",
@@ -3521,26 +3512,25 @@
       "created_at": "2026-09-26T04:35:51.856+00:00"
     },
     {
+      "id": "usr_000",
+      "email": "m@com",
+      "password_hash": "$2a$10$S4/jyd3PxWngNMQrWD71rONesXVf7cHJXBhUuRgMim05Wp57vP.nS",
+      "name": "Student User",
+      "role": "user",
+      "status": "active",
+      "created_at": "2026-10-04T15:16:51.15+00:00"
+    },
+    {
       "id": "usr_001",
       "email": "m@1",
-      "password_hash": "$2a$10$f6fvVRd6yOV2b0E965N5L..ZAnV87.feHUt2PA1iHJ5ZWXPcyeKRK",
+      "password_hash": "$2a$10$S4/jyd3PxWngNMQrWD71rONesXVf7cHJXBhUuRgMim05Wp57vP.nS",
       "name": "Student User (Quick)",
       "role": "user",
       "status": "active",
-      "created_at": "2026-09-25T15:27:16.246+00:00"
+      "created_at": "2026-10-04T15:16:51.15+00:00"
     }
   ],
   "system_settings": [
-    {
-      "key": "maintenance_global_enabled",
-      "value": "true",
-      "updated_at": "2026-09-26T01:24:44.011+00:00"
-    },
-    {
-      "key": "maintenance_scope",
-      "value": "forms",
-      "updated_at": "2026-09-26T01:24:44.014+00:00"
-    },
     {
       "key": "maintenance_title",
       "value": "Scheduled System Maintenance",
@@ -3555,6 +3545,16 @@
       "key": "maintenance_estimated_end",
       "value": "",
       "updated_at": "2026-09-26T01:24:44.018+00:00"
+    },
+    {
+      "key": "maintenance_global_enabled",
+      "value": "true",
+      "updated_at": "2026-09-26T01:24:44.011+00:00"
+    },
+    {
+      "key": "maintenance_scope",
+      "value": "forms",
+      "updated_at": "2026-09-26T01:24:44.014+00:00"
     }
   ],
   "audit_logs": [],

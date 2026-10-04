@@ -10,7 +10,7 @@ import {
 
 export class GeminiProvider extends BaseAIProvider {
   readonly providerName = 'gemini';
-  readonly defaultModel = 'gemini-3-flash-preview';
+  readonly defaultModel = 'gemini-flash-lite-latest';
 
   private client: GoogleGenAI | null = null;
 
@@ -94,6 +94,7 @@ export class GeminiProvider extends BaseAIProvider {
                 name: tc.name,
                 args: tc.arguments,
               },
+              ...(tc.thoughtSignature ? { thoughtSignature: tc.thoughtSignature } : {}),
             })),
           });
         } else {
@@ -111,58 +112,100 @@ export class GeminiProvider extends BaseAIProvider {
       }
     }
 
-    try {
-      const response = await this.client.models.generateContent({
-        model: modelName,
-        contents,
-        config: {
-          systemInstruction: request.systemPrompt,
-          temperature: request.temperature ?? 0.1,
-          maxOutputTokens: request.maxTokens,
-          tools: functionDeclarations && functionDeclarations.length > 0 ? [{ functionDeclarations }] : undefined,
-        },
-      });
+    let attempts = 0;
+    const maxAttempts = 3;
 
-      const latencyMs = Date.now() - startTime;
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const response = await this.client.models.generateContent({
+          model: modelName,
+          contents,
+          config: {
+            systemInstruction: request.systemPrompt,
+            temperature: request.temperature ?? 0.1,
+            maxOutputTokens: request.maxTokens,
+            tools: functionDeclarations && functionDeclarations.length > 0 ? [{ functionDeclarations }] : undefined,
+          },
+        });
 
-      // Extract tool calls
-      const toolCalls: AIToolCall[] = [];
-      if (response.functionCalls && response.functionCalls.length > 0) {
-        for (const call of response.functionCalls) {
-          toolCalls.push({
-            id: call.id || `call_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-            name: call.name || '',
-            arguments: this.parseToolArguments(call.args),
-          });
-        }
-      }
+        const latencyMs = Date.now() - startTime;
 
-      // Extract token usage
-      const usageMeta = (response as any).usageMetadata;
-      const usage = usageMeta
-        ? {
-            promptTokens: usageMeta.promptTokenCount,
-            completionTokens: usageMeta.candidatesTokenCount,
-            totalTokens: usageMeta.totalTokenCount,
+        // Extract tool calls
+        const toolCalls: AIToolCall[] = [];
+        const parts = response.candidates?.[0]?.content?.parts || [];
+        for (const part of parts) {
+          if ((part as any).functionCall) {
+            const call = (part as any).functionCall;
+            toolCalls.push({
+              id: call.id || `call_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              name: call.name || '',
+              arguments: this.parseToolArguments(call.args),
+              thoughtSignature: (part as any).thoughtSignature,
+            });
           }
-        : undefined;
+        }
+        if (toolCalls.length === 0 && response.functionCalls && response.functionCalls.length > 0) {
+          for (const call of response.functionCalls) {
+            toolCalls.push({
+              id: call.id || `call_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              name: call.name || '',
+              arguments: this.parseToolArguments(call.args),
+            });
+          }
+        }
 
-      const finishReason = response.candidates?.[0]?.finishReason;
+        // Extract token usage
+        const usageMeta = (response as any).usageMetadata;
+        const usage = usageMeta
+          ? {
+              promptTokens: usageMeta.promptTokenCount,
+              completionTokens: usageMeta.candidatesTokenCount,
+              totalTokens: usageMeta.totalTokenCount,
+            }
+          : undefined;
 
-      return {
-        content: response.text?.trim() || '',
-        toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
-        provider: this.providerName,
-        model: modelName,
-        latencyMs,
-        usage,
-        finishReason,
-        raw: response,
-      };
-    } catch (err: any) {
-      const status = err.status || err.statusCode || (err.message?.includes('429') ? 429 : (err.message?.includes('404') ? 404 : 500));
-      throw this.normalizeHttpError(err, status, err);
+        const finishReason = response.candidates?.[0]?.finishReason;
+
+        return {
+          content: response.text?.trim() || '',
+          toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+          provider: this.providerName,
+          model: modelName,
+          latencyMs,
+          usage,
+          finishReason,
+          raw: response,
+        };
+      } catch (err: any) {
+        const isRateLimit =
+          err.status === 429 ||
+          err.statusCode === 429 ||
+          err.message?.includes('429') ||
+          err.message?.includes('RESOURCE_EXHAUSTED');
+
+        if (isRateLimit && attempts < maxAttempts) {
+          let delayMs = 2500 * attempts;
+          const retryDelayMatch = err.message?.match(/Please retry in ([0-9.]+)s/);
+          if (retryDelayMatch) {
+            delayMs = Math.ceil(parseFloat(retryDelayMatch[1]) * 1000) + 800;
+          }
+          await new Promise((r) => setTimeout(r, delayMs));
+          continue;
+        }
+
+        const status =
+          err.status ||
+          err.statusCode ||
+          (err.message?.includes('429') ? 429 : err.message?.includes('404') ? 404 : 500);
+        throw this.normalizeHttpError(err, status, err);
+      }
     }
+
+    throw new AIError('Max retry attempts reached for Gemini provider', {
+      code: 'AI_RATE_LIMIT',
+      provider: this.providerName,
+    });
   }
 
   async getHealth(): Promise<ProviderHealth> {

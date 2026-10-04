@@ -93,7 +93,7 @@ export class EligibilityEngine {
     }
 
     criteria.push({
-      name: 'Minimum Academic Benchmark',
+      name: 'Minimum Academic Requirement (>= 85% or CGPA >= 8.5)',
       required: 'CGPA >= 8.5 or Marks >= 85%',
       studentValue: scoreDetail,
       passed: academicPassed,

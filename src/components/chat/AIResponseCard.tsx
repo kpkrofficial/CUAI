@@ -13,6 +13,7 @@ import type { ChatTheme } from "./ChatSettingsModal";
 
 interface AIResponseCardProps {
   content: string;
+  messageId?: string;
   onRegenerate?: () => void;
   onOptionClick?: (optionText: string) => void;
   metadata?: any;
@@ -78,6 +79,7 @@ function sanitizeContent(raw: string): string {
 
 export default function AIResponseCard({
   content,
+  messageId,
   onRegenerate,
   onOptionClick,
   metadata,
@@ -109,6 +111,8 @@ export default function AIResponseCard({
       {/* Response Header */}
       <ResponseHeader
         content={content}
+        messageId={messageId || metadata?.messageId}
+        metadata={metadata}
         onRegenerate={onRegenerate}
         isStreaming={isStreaming}
       />

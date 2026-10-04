@@ -23,6 +23,11 @@ export class AIProviderFactory {
     this.providers.set('ollama', new OllamaProvider());
   }
 
+  static registerProvider(name: AIProviderType, provider: AIProvider): void {
+    this.initialize();
+    this.providers.set(name, provider);
+  }
+
   static getProvider(name?: string): AIProvider {
     this.initialize();
 

@@ -104,6 +104,8 @@ export function sanitizeStudentForChat(student: StudentRecord): Record<string, a
 }
 
 export class StudentService {
+  private static studentCache = new Map<string, { record: any; expires: number }>();
+
   private static getClient() {
     return createAdminClient();
   }
@@ -116,8 +118,14 @@ export class StudentService {
     context: AuthContext,
     options: { forChat?: boolean } = {}
   ): Promise<StudentRecord | null> {
-    const client = this.getClient();
     const cleanRoll = rollNumber.trim().toUpperCase();
+    const cacheKey = `roll_${cleanRoll}_${context.campusId || 'all'}_${options.forChat ? 'chat' : 'raw'}`;
+    const cached = this.studentCache.get(cacheKey);
+    if (cached && cached.expires > Date.now()) {
+      return cached.record;
+    }
+
+    const client = this.getClient();
 
     let query = client
       .from('student_records')
@@ -137,48 +145,234 @@ export class StudentService {
 
     // Strict Student Self-Access Rule
     if (context.role === 'student') {
+      const rollFromEmail = context.email ? context.email.split('@')[0].trim().toUpperCase() : '';
       const isOwner =
         (record.account_id && record.account_id === context.userId) ||
-        (record.email && record.email.toLowerCase() === context.email.toLowerCase());
+        (record.email && record.email.toLowerCase() === context.email.toLowerCase()) ||
+        (rollFromEmail && record.roll_number.toUpperCase() === rollFromEmail);
 
       if (!isOwner) {
         throw new Error('Access Denied: Students are strictly restricted to their own private records.');
       }
     }
 
-    if (options.forChat) {
-      return sanitizeStudentForChat(record) as any;
-    }
-
-    return record;
+    const result = options.forChat ? (sanitizeStudentForChat(record) as any) : record;
+    this.studentCache.set(cacheKey, { record: result, expires: Date.now() + 60_000 });
+    return result;
   }
 
   /**
-   * Get authenticated student's own record
+   * Canonical server-side identity resolver for authenticated students (Section 2).
+   * Resolves the verified StudentRecord associated with context.userId (auth.uid()).
+   * 
+   * Strict precedence:
+   * 1. Exact match on student_records.account_id = context.userId (when valid UUID)
+   * 2. Controlled fallback: Match student_records.email ILIKE context.email
+   * 3. Controlled fallback: Match student_records.roll_number ILIKE email username (if valid roll format)
+   * 
+   * NEVER guesses. Rejects ambiguity. Returns null if unresolvable.
+   */
+  static async resolveAuthenticatedStudent(
+    context: AuthContext,
+    options: { forChat?: boolean } = {}
+  ): Promise<StudentRecord | null> {
+    if (!context || !context.userId) return null;
+
+    const cacheKey = `auth_${context.userId}_${context.email}_${context.campusId || 'all'}_${options.forChat ? 'chat' : 'raw'}`;
+    const cached = this.studentCache.get(cacheKey);
+    if (cached && cached.expires > Date.now()) {
+      return cached.record;
+    }
+
+    const client = this.getClient();
+
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(context.userId);
+
+    // 1. Strict primary lookup: account_id = context.userId
+    if (isUuid) {
+      let query = client
+        .from('student_records')
+        .select('*')
+        .eq('account_id', context.userId);
+
+      if (context.campusId && context.role !== 'superadmin') {
+        query = query.eq('campus_id', context.campusId);
+      }
+
+      const { data: record, error } = await query.order('created_at', { ascending: false }).limit(1).maybeSingle();
+      if (!error && record) {
+        const res = options.forChat ? (sanitizeStudentForChat(record) as any) : record;
+        this.studentCache.set(cacheKey, { record: res, expires: Date.now() + 60_000 });
+        return res;
+      }
+
+      // Check without campus_id filter in case tenant context was not populated
+      if (context.campusId && context.role !== 'superadmin') {
+        const { data: globalRec, error: globalErr } = await client
+          .from('student_records')
+          .select('*')
+          .eq('account_id', context.userId)
+          .limit(1)
+          .maybeSingle();
+
+        if (!globalErr && globalRec) {
+          const res = options.forChat ? (sanitizeStudentForChat(globalRec) as any) : globalRec;
+          this.studentCache.set(cacheKey, { record: res, expires: Date.now() + 60_000 });
+          return res;
+        }
+      }
+    }
+
+    // 2. Controlled fallback: Match by verified email
+    if (context.email && context.email.includes('@')) {
+      const cleanEmail = context.email.trim().toLowerCase();
+      let emailQuery = client
+        .from('student_records')
+        .select('*')
+        .ilike('email', cleanEmail);
+
+      if (context.campusId && context.role !== 'superadmin') {
+        emailQuery = emailQuery.eq('campus_id', context.campusId);
+      }
+
+      const { data: emailRecords, error: emailErr } = await emailQuery.limit(2);
+      if (!emailErr && emailRecords && emailRecords.length === 1) {
+        const record = emailRecords[0];
+        // Lazily link account_id if valid UUID and currently unset
+        if (isUuid && !record.account_id) {
+          await client.from('student_records').update({ account_id: context.userId }).eq('id', record.id);
+          record.account_id = context.userId;
+        }
+        const res = options.forChat ? (sanitizeStudentForChat(record) as any) : record;
+        this.studentCache.set(cacheKey, { record: res, expires: Date.now() + 60_000 });
+        return res;
+      }
+    }
+
+    // 3. Controlled fallback: Extract roll number from institutional email (e.g. 24HT1A43G2@student.cityapp.campus)
+    const rollFromEmail = context.email ? context.email.split('@')[0].trim().toUpperCase() : '';
+    if (rollFromEmail && /^[0-9]{2}[A-Za-z0-9]{5,10}$/.test(rollFromEmail)) {
+      let rollQuery = client
+        .from('student_records')
+        .select('*')
+        .ilike('roll_number', rollFromEmail);
+
+      if (context.campusId && context.role !== 'superadmin') {
+        rollQuery = rollQuery.eq('campus_id', context.campusId);
+      }
+
+      const { data: rollRecords, error: rollErr } = await rollQuery.limit(2);
+      if (!rollErr && rollRecords && rollRecords.length === 1) {
+        const record = rollRecords[0];
+        if (isUuid && !record.account_id) {
+          await client.from('student_records').update({ account_id: context.userId }).eq('id', record.id);
+          record.account_id = context.userId;
+        }
+        const res = options.forChat ? (sanitizeStudentForChat(record) as any) : record;
+        this.studentCache.set(cacheKey, { record: res, expires: Date.now() + 60_000 });
+        return res;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get authenticated student's own record. Delegates to the canonical resolveAuthenticatedStudent.
    */
   static async getOwnStudentProfile(
     context: AuthContext,
     options: { forChat?: boolean } = {}
   ): Promise<StudentRecord | null> {
+    return await this.resolveAuthenticatedStudent(context, options);
+  }
+
+  /**
+   * Disambiguated student resolution supporting explicit roll numbers, exact names, and authenticated self-access.
+   * Prevents silent misattribution from ambiguous fuzzy matching (Requirement Section 10).
+   */
+  static async resolveStudent(
+    args: { rollNumber?: string; name?: string },
+    context: AuthContext,
+    options: { forChat?: boolean } = {}
+  ): Promise<StudentRecord | null> {
     const client = this.getClient();
 
-    let query = client
-      .from('student_records')
-      .select('*')
-      .or(`account_id.eq.${context.userId},email.ilike.${context.email}`);
+    // 1. Student self-resolution: students can only resolve their own record
+    if (context.role === 'student') {
+      const own = await this.resolveAuthenticatedStudent(context, options);
+      if (!own) {
+        return null;
+      }
 
-    if (context.campusId && context.role !== 'superadmin') {
-      query = query.eq('campus_id', context.campusId);
+      // If user supplied rollNumber, ensure it matches own roll number
+      if (args.rollNumber && args.rollNumber.trim()) {
+        const cleanReqRoll = args.rollNumber.trim().toUpperCase();
+        if (own.roll_number.toUpperCase() !== cleanReqRoll) {
+          throw new Error('Access Denied: Students are strictly restricted to their own private records.');
+        }
+      }
+
+      // If user supplied name, ensure it matches own name
+      if (args.name && args.name.trim()) {
+        const cleanReqName = args.name.trim().toLowerCase();
+        if (!own.name.toLowerCase().includes(cleanReqName)) {
+          throw new Error('Access Denied: Students are strictly restricted to their own private records.');
+        }
+      }
+
+      return own;
     }
 
-    const { data: record, error } = await query.order('created_at', { ascending: false }).limit(1).maybeSingle();
-    if (error || !record) return null;
-
-    if (options.forChat) {
-      return sanitizeStudentForChat(record) as any;
+    // 2. Staff / Admin Resolution
+    // Branch A: By Roll Number
+    if (args.rollNumber && args.rollNumber.trim()) {
+      return await this.getStudentByRoll(args.rollNumber, context, options);
     }
 
-    return record;
+    // Branch B: By Name (with strict disambiguation)
+    if (args.name && args.name.trim()) {
+      const cleanName = args.name.trim();
+      let query = client
+        .from('student_records')
+        .select('*')
+        .ilike('name', `%${cleanName}%`);
+
+      if (context.role !== 'superadmin') {
+        if (!context.campusId) {
+          throw new Error('Tenant isolation violation: No campus assigned to user');
+        }
+        query = query.eq('campus_id', context.campusId);
+      }
+
+      const { data: matches, error } = await query;
+      if (error) {
+        throw new Error(`Database query error while resolving student name "${cleanName}": ${error.message}`);
+      }
+
+      if (!matches || matches.length === 0) {
+        return null;
+      }
+
+      if (matches.length > 1) {
+        // Look for exact case-insensitive match
+        const exactMatches = matches.filter(
+          (m) => m.name.toLowerCase() === cleanName.toLowerCase()
+        );
+        if (exactMatches.length === 1) {
+          return options.forChat ? (sanitizeStudentForChat(exactMatches[0]) as any) : exactMatches[0];
+        }
+
+        // Section 10: "If multiple records match: Multiple matching students were found. Please provide the roll number. Do not guess."
+        throw new Error(
+          `Multiple matching students were found for "${cleanName}". Please provide the roll number.`
+        );
+      }
+
+      return options.forChat ? (sanitizeStudentForChat(matches[0]) as any) : matches[0];
+    }
+
+    return null;
   }
 
   /**

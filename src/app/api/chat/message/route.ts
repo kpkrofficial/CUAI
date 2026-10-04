@@ -3,6 +3,7 @@ import { getAuthContext } from '@/lib/auth/session';
 import { ChatService } from '@/lib/services/chat.service';
 import { AIOrchestrator } from '@/lib/ai/orchestrator';
 import { AuditService } from '@/lib/services/audit.service';
+import { ConversationLearningService } from '@/lib/ai/conversation-learning';
 import { enforceRateLimit, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
@@ -92,11 +93,48 @@ export async function POST(req: Request) {
       context
     );
 
-    // 9. Return standardized response preserving existing frontend contracts
+    // 9. Ingest into durable Supabase conversation learning store (PII Redacted)
+    const primaryTool = (orchestration.toolResults || [])[0]?.tool || ((orchestration.citations || []).length > 0 ? 'searchKnowledge' : 'campus_ai');
+    try {
+      await ConversationLearningService.ingestEvent({
+        conversation_id: activeSession.id,
+        message_id: assistantMessage.id,
+        user_role: context.role,
+        raw_user_message: message,
+        assistant_reply: orchestration.reply,
+        intent: orchestration.normalizedQuery?.intent || 'GENERAL_CONVERSATION',
+        tool: primaryTool,
+        provider: orchestration.provider,
+        model: orchestration.model,
+        success: true,
+        metadata: {
+          latencyMs: orchestration.latencyMs,
+          sources: orchestration.sources || [],
+          fallbackUsed: orchestration.fallbackUsed || false,
+        },
+      });
+    } catch (ingestErr) {
+      console.warn('[ChatRoute] Learning event ingest warning:', ingestErr);
+    }
+
+    // 10. Return standardized response preserving existing frontend contracts
+    const enrichedAssistantMessage = {
+      ...assistantMessage,
+      tool_invocations: orchestration.toolResults || null,
+      metadata_json: JSON.stringify({
+        messageId: assistantMessage.id,
+        primaryTool,
+        toolResults: orchestration.toolResults || [],
+        sources: orchestration.sources || [],
+        provider: orchestration.provider,
+        model: orchestration.model,
+      }),
+    };
+
     return NextResponse.json({
       sessionId: activeSession.id,
       userMessage,
-      assistantMessage,
+      assistantMessage: enrichedAssistantMessage,
       provider: orchestration.provider,
       model: orchestration.model,
       latencyMs: orchestration.latencyMs,

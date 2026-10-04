@@ -12,6 +12,10 @@ if (!url || !serviceKey) {
   console.error('Error: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment or .env.local');
   process.exit(1);
 }
+if (process.env.NODE_ENV === 'production') {
+  console.error('FATAL: Seeding student data is forbidden in production.');
+  process.exit(1);
+}
 const supabase = createClient(url, serviceKey);
 
 async function seedActualData() {

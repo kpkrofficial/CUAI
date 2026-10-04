@@ -11,6 +11,10 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error('Error: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment or .env.local');
   process.exit(1);
 }
+if (process.env.NODE_ENV === 'production') {
+  console.error('FATAL: Seeding Supabase from local json is forbidden in production.');
+  process.exit(1);
+}
 const BUCKET = 'student-assets';
 
 async function seed() {

@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "synonyms": {
+    "profile": ["details", "info", "information", "biodata", "profile", "account", "identity", "record"],
+    "marks": ["marks", "score", "scores", "result", "results", "grade", "grades", "percentage", "perc"],
+    "roll_number": ["roll no", "rollno", "roll number", "roll num", "reg no", "registration no", "hall ticket", "hallticket", "student id", "matric no"],
+    "ssc": ["10th", "tenth", "10th class", "matric", "matriculation", "ssc board", "secondary school"],
+    "intermediate": ["inter", "12th", "twelfth", "plus two", "+2", "intermediate board", "senior secondary", "junior college"],
+    "attendance": ["attendance", "present percentage", "attnd", "att", "bunk percentage", "biometric"],
+    "leave": ["leave balance", "leaves", "vacation request", "permission", "out pass", "outpass", "on duty", "od"],
+    "fees": ["fee balance", "tuition", "dues", "fee receipt", "pending payment", "college fee", "term fee"],
+    "hostel": ["room allocation", "hostel room", "dorm", "hostel block", "mess", "curfew", "warden"],
+    "scholarship": ["scholarship eligibility", "merit scholarship", "fee waiver", "financial assistance", "reimbursement"],
+    "application": ["admission application", "admission status", "application status", "intake status", "form status"],
+    "curriculum": ["syllabus", "subjects", "courses", "course catalog", "academic regulations", "credits"]
+  }
+}

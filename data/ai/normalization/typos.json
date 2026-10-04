@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "typos": {
+    "rol no": "roll number",
+    "role no": "roll number",
+    "rol number": "roll number",
+    "rollnuber": "roll number",
+    "roll nmbr": "roll number",
+    "roll nomber": "roll number",
+    "attendence": "attendance",
+    "atendance": "attendance",
+    "attendnce": "attendance",
+    "attandance": "attendance",
+    "semister": "semester",
+    "semestr": "semester",
+    "semestor": "semester",
+    "aplication": "application",
+    "applicaion": "application",
+    "admisson": "admission",
+    "addmission": "admission",
+    "percantage": "percentage",
+    "percentge": "percentage",
+    "persentage": "percentage",
+    "schollarship": "scholarship",
+    "scholorship": "scholarship",
+    "sholarship": "scholarship",
+    "intermidiate": "intermediate",
+    "intermedate": "intermediate",
+    "libary": "library",
+    "librairy": "library",
+    "hostle": "hostel",
+    "hostal": "hostel",
+    "timtable": "timetable",
+    "time table": "timetable",
+    "curiculum": "curriculum",
+    "curriculam": "curriculum",
+    "eligiblity": "eligibility",
+    "eligble": "eligible",
+    "elegible": "eligible",
+    "certifcate": "certificate",
+    "certificats": "certificates",
+    "reciept": "receipt",
+    "feee": "fee",
+    "markss": "marks",
+    "makrs": "marks"
+  },
+  "contextual_typos": [
+    {
+      "trigger": "role",
+      "context_pattern": "(my|student|check|show|what is)\\s+role\\s+(no|number|num)",
+      "replacement": "roll",
+      "confidence": 0.98,
+      "explanation": "Contextual correction: 'role no' to 'roll number' in student identification queries without corrupting 'role of warden'"
+    },
+    {
+      "trigger": "mark",
+      "context_pattern": "mark'?s",
+      "replacement": "marks",
+      "confidence": 0.99,
+      "explanation": "Apostrophe removal in 'mark's' -> 'marks'"
+    }
+  ]
+}

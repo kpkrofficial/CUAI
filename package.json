@@ -16,7 +16,20 @@
     "test:ai": "npx tsx --env-file=.env.local tests/ai-provider-abstraction.test.ts",
     "test:matrix": "npx tsx --env-file=.env.local tests/multi-provider-matrix.test.ts",
     "test:all": "tsx qa/run-full-suite.ts",
-    "compare:ai": "npx tsx --env-file=.env.local scripts/compare-ai-providers.ts"
+    "compare:ai": "npx tsx --env-file=.env.local scripts/compare-ai-providers.ts",
+    "validate:ai-data": "npx tsx scripts/validate-ai-dataset.ts",
+    "test:ai-normalization": "npx tsx tests/ai-normalization.test.ts",
+    "test:ai-conversations": "npx tsx --env-file=.env.local tests/ai-conversations.test.ts",
+    "test:ai-routing": "npx tsx --env-file=.env.local tests/ai-routing.test.ts",
+    "test:ai-security": "npx tsx --env-file=.env.local tests/ai-security.test.ts",
+    "test:ai-provider-integrity": "npx tsx --env-file=.env.local tests/ai-provider-integrity.test.ts",
+    "test:ai-provider-live": "npx tsx --env-file=.env.local tests/ai-provider-live.test.ts",
+    "test:ai-feedback": "npx tsx --env-file=.env.local tests/ai-feedback.test.ts",
+    "test:ai-learning-pipeline": "npx tsx --env-file=.env.local tests/ai-learning-pipeline.test.ts",
+    "test:ai-anonymization": "npx tsx tests/ai-anonymization.test.ts",
+    "test:ai-review": "npx tsx --env-file=.env.local tests/ai-review.test.ts",
+    "test:ai-regression": "npx tsx --env-file=.env.local tests/ai-regression.test.ts",
+    "test:ai-live-chat": "npx tsx --env-file=.env.local tests/ai-live-chat-verification.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.27.0",

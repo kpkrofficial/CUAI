@@ -14,6 +14,11 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
+if (process.env.NODE_ENV === 'production') {
+  console.error('FATAL: Legacy data migration is disabled in production environment.');
+  process.exit(1);
+}
+
 const supabase = createClient(url, serviceKey);
 
 async function runMigration() {

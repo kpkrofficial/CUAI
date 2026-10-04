@@ -37,3 +37,9 @@ Thumbs.db
 # TypeScript & Caches
 *.tsbuildinfo
 next-env.d.ts
+
+# AI Conversations - Raw unredacted logs must NEVER be committed
+data/ai/conversations/raw/
+data/ai/conversations/anonymized/*.json
+data/ai/conversations/curated/*.json
+data/ai/conversations/rejected/

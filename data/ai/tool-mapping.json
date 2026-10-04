@@ -1,0 +1,606 @@
+{
+  "version": "1.0.0",
+  "description": "CityApp AI Canonical Tool and Routing Mapping Table",
+  "mappings": {
+    "PROFILE_SELF": {
+      "tool": "getStudentProfile",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["name", "roll_number", "branch", "year", "section", "college", "admission_type"]
+    },
+    "PROFILE_BY_ROLL": {
+      "tool": "getStudentProfile",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["name", "roll_number", "branch", "year", "section", "college", "admission_type"]
+    },
+    "PROFILE_BY_NAME": {
+      "tool": "getStudentProfile",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_name",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["name", "roll_number", "branch", "year", "section", "college", "admission_type"]
+    },
+    "ACADEMIC_SELF": {
+      "tool": "getAcademicRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["ssc.marks_obtained", "ssc.percentage", "intermediate.marks_obtained", "intermediate.percentage", "standing_arrears"]
+    },
+    "ACADEMIC_BY_ROLL": {
+      "tool": "getAcademicRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["ssc.marks_obtained", "ssc.percentage", "intermediate.marks_obtained", "intermediate.percentage", "standing_arrears"]
+    },
+    "ACADEMIC_BY_NAME": {
+      "tool": "getAcademicRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_name",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["ssc.marks_obtained", "ssc.percentage", "intermediate.marks_obtained", "intermediate.percentage", "standing_arrears"]
+    },
+    "APPLICATION_SELF": {
+      "tool": "getApplicationStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["application_status", "admission_type", "branch", "year", "college"]
+    },
+    "APPLICATION_BY_ROLL": {
+      "tool": "getApplicationStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["application_status", "admission_type", "branch", "year", "college"]
+    },
+    "APPLICATION_BY_NAME": {
+      "tool": "getApplicationStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_name",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["application_status", "admission_type", "branch", "year", "college"]
+    },
+    "ELIGIBILITY_SELF": {
+      "tool": "getEligibilityData",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["verdict", "policyName", "criteria", "summary"]
+    },
+    "ELIGIBILITY_BY_ROLL": {
+      "tool": "getEligibilityData",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["verdict", "policyName", "criteria", "summary"]
+    },
+    "ATTENDANCE_SELF": {
+      "tool": "getAttendanceRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["attendance_percentage", "total_classes", "attended_classes"]
+    },
+    "ATTENDANCE_BY_STUDENT": {
+      "tool": "getAttendanceRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["attendance_percentage", "total_classes", "attended_classes"]
+    },
+    "ATTENDANCE_SUMMARY": {
+      "tool": "getAttendanceRecord",
+      "data_source": "postgresql",
+      "entity_resolution": "contextual",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["batch", "section", "average_attendance"]
+    },
+    "ATTENDANCE_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["policy_title", "minimum_percentage", "regulations"]
+    },
+    "LEAVE_SELF": {
+      "tool": "getLeaveStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["leave_balance", "applied_leaves", "approved_leaves"]
+    },
+    "LEAVE_BALANCE": {
+      "tool": "getLeaveStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["casual_leave", "medical_leave", "remaining_days"]
+    },
+    "LEAVE_STATUS": {
+      "tool": "getLeaveStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["application_id", "status", "from_date", "to_date"]
+    },
+    "LEAVE_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["policy_rules", "leave_types", "sanctioning_authority"]
+    },
+    "LEAVE_APPLICATION": {
+      "tool": "getLeaveStatus",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["application_process", "form_fields"]
+    },
+    "FEES_SELF": {
+      "tool": "getFeeDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["total_fee", "paid_amount", "due_amount", "due_date"]
+    },
+    "FEES_BALANCE": {
+      "tool": "getFeeDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["due_amount", "fee_heads", "pending_installments"]
+    },
+    "FEES_PAYMENT": {
+      "tool": "getFeeDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["payment_url", "bank_account", "challan_instructions"]
+    },
+    "FEES_RECEIPT": {
+      "tool": "getFeeDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["receipt_number", "transaction_ref", "amount_paid"]
+    },
+    "FEES_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["refund_regulations", "late_fee_fines", "installment_policy"]
+    },
+    "HOSTEL_SELF": {
+      "tool": "getHostelDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["block", "room_number", "room_type", "warden_contact"]
+    },
+    "HOSTEL_ALLOCATION": {
+      "tool": "getHostelDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["allocation_status", "bed_number", "check_in_date"]
+    },
+    "HOSTEL_ROOM": {
+      "tool": "getHostelDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["room_number", "amenities", "maintenance_status"]
+    },
+    "HOSTEL_ATTENDANCE": {
+      "tool": "getHostelDetails",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["biometric_status", "curfew_time", "outpass_history"]
+    },
+    "HOSTEL_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["curfew_rules", "visitor_rules", "mess_timings", "discipline"]
+    },
+    "SCHOLARSHIP_SELF": {
+      "tool": "getEligibilityData",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["scholarship_name", "award_amount", "renewal_status"]
+    },
+    "SCHOLARSHIP_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["eligibility_criteria", "waiver_percentage", "application_deadline"]
+    },
+    "SCHOLARSHIP_ELIGIBILITY": {
+      "tool": "getEligibilityData",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["verdict", "score", "criteria", "summary"]
+    },
+    "ADMISSION_DOCUMENTS": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["required_certificates", "photocopy_sets", "original_memos"]
+    },
+    "ADMISSION_PROCESS": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["counselling_steps", "reporting_procedure", "allotment_order"]
+    },
+    "ADMISSION_POLICY": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["quota_breakdown", "cancellation_terms", "transfer_rules"]
+    },
+    "ADMISSION_DEADLINE": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["last_reporting_date", "phase_schedule", "seat_acceptance_deadline"]
+    },
+    "COURSE_INFORMATION": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["degree_programs", "branch_specializations", "intake_capacity"]
+    },
+    "SUBJECT_INFORMATION": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["subject_code", "syllabus_topics", "prescribed_textbooks"]
+    },
+    "CURRICULUM_INFORMATION": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["total_credits", "grading_scheme", "promotion_rules"]
+    },
+    "TIMETABLE_SELF": {
+      "tool": "getTimetable",
+      "data_source": "postgresql",
+      "entity_resolution": "self",
+      "expected_behavior": "RESOLVE_SELF",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["day", "period", "subject", "faculty", "room"]
+    },
+    "CAMPUS_EVENT": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["event_name", "date", "venue", "organizing_club"]
+    },
+    "CAMPUS_SCHEDULE": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["academic_calendar", "semester_dates", "mid_exams", "holidays"]
+    },
+    "ADMIN_COUNT": {
+      "tool": "countStudents",
+      "data_source": "postgresql",
+      "entity_resolution": "contextual",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["count", "branch", "year"]
+    },
+    "ADMIN_SEARCH": {
+      "tool": "searchStudents",
+      "data_source": "postgresql",
+      "entity_resolution": "contextual",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["records", "total_found", "filters_applied"]
+    },
+    "ADMIN_SUMMARY": {
+      "tool": "countStudents",
+      "data_source": "postgresql",
+      "entity_resolution": "contextual",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["total_enrolled", "branch_distribution", "status_breakdown"]
+    },
+    "ADMIN_ANALYTICS": {
+      "tool": "countStudents",
+      "data_source": "postgresql",
+      "entity_resolution": "contextual",
+      "expected_behavior": "RESOLVE_EXPLICIT",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "admin",
+      "expected_fields": ["intake_trend", "retention_rate", "category_distribution"]
+    },
+    "KNOWLEDGE_SEARCH": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["title", "content", "source", "relevance"]
+    },
+    "GENERAL_CAMPUS_INFORMATION": {
+      "tool": "searchKnowledge",
+      "data_source": "pgvector",
+      "entity_resolution": "none",
+      "expected_behavior": "SEARCH_RAG",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["facility", "location", "timings", "contact"]
+    },
+    "AMBIGUOUS_STUDENT": {
+      "tool": "none",
+      "data_source": "none",
+      "entity_resolution": "contextual",
+      "expected_behavior": "CLARIFICATION_REQUIRED",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["candidate_names", "disambiguation_prompt"]
+    },
+    "AMBIGUOUS_INTENT": {
+      "tool": "none",
+      "data_source": "none",
+      "entity_resolution": "contextual",
+      "expected_behavior": "CLARIFICATION_REQUIRED",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["intent_options", "clarification_prompt"]
+    },
+    "MISSING_CONTEXT": {
+      "tool": "none",
+      "data_source": "none",
+      "entity_resolution": "contextual",
+      "expected_behavior": "CLARIFICATION_REQUIRED",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["antecedent_request", "clarification_prompt"]
+    },
+    "PEER_DATA_REQUEST": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "explicit_roll",
+      "expected_behavior": "REFUSE_UNAUTHORIZED",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["security_alert", "access_denied_reason"]
+    },
+    "PII_REQUEST": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "none",
+      "expected_behavior": "REFUSE_UNAUTHORIZED",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["privacy_policy_refusal", "redaction_notice"]
+    },
+    "UNAUTHORIZED_ADMIN_REQUEST": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "none",
+      "expected_behavior": "REFUSE_UNAUTHORIZED",
+      "pii_allowed": false,
+      "requires_auth": true,
+      "required_role": "student",
+      "expected_fields": ["role_escalation_refusal"]
+    },
+    "PROMPT_INJECTION": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "none",
+      "expected_behavior": "REFUSE_INJECTION",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["adversarial_guardrail_triggered"]
+    },
+    "SQL_INJECTION": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "none",
+      "expected_behavior": "REFUSE_INJECTION",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["sql_firewall_triggered"]
+    },
+    "SYSTEM_PROMPT_REQUEST": {
+      "tool": "none",
+      "data_source": "refusal",
+      "entity_resolution": "none",
+      "expected_behavior": "REFUSE_INJECTION",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["prompt_protection_refusal"]
+    },
+    "GENERAL_CONVERSATION": {
+      "tool": "none",
+      "data_source": "none",
+      "entity_resolution": "none",
+      "expected_behavior": "CONVERSE_DIRECT",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["greeting_response"]
+    },
+    "OUT_OF_SCOPE": {
+      "tool": "none",
+      "data_source": "none",
+      "entity_resolution": "none",
+      "expected_behavior": "OUT_OF_SCOPE",
+      "pii_allowed": false,
+      "requires_auth": false,
+      "required_role": "any",
+      "expected_fields": ["scope_boundary_guidance"]
+    }
+  }
+}

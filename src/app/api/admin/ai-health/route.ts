@@ -10,17 +10,25 @@ export async function GET() {
     }
 
     const activeProvider = AIProviderFactory.getActiveProvider();
-    const health = await AIProviderFactory.checkAllHealth();
+    const activeHealth = await activeProvider.getHealth();
+    const fallbackEnabled =
+      process.env.AI_ENABLE_FALLBACK === 'true' ||
+      !process.env.NODE_ENV ||
+      process.env.NODE_ENV !== 'production';
 
     return NextResponse.json({
-      activeProvider: activeProvider.getProviderName(),
-      activeModel: activeProvider.getModelName(),
-      fallbackChain: AIProviderFactory.getFallbackChain().map(p => ({
+      provider: activeProvider.getProviderName(),
+      model: activeProvider.getModelName(),
+      configured: activeProvider.isConfigured(),
+      healthy: activeHealth.available,
+      lastCheck: new Date().toISOString(),
+      latencyMs: activeHealth.latencyMs || 0,
+      fallbackEnabled,
+      fallbackChain: AIProviderFactory.getFallbackChain().map((p) => ({
         provider: p.getProviderName(),
         model: p.getModelName(),
         configured: p.isConfigured(),
       })),
-      providers: health,
     });
   } catch (error: any) {
     console.error('[API admin/ai-health GET] Error:', error);
