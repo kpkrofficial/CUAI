@@ -65,7 +65,7 @@ export class AIOrchestrator {
         !lowerInput.includes('my application') &&
         !lowerInput.includes('my status');
 
-      const rollMatch = rawInput.match(/\b([0-9]{2}[A-Z]{2,5}[0-9]{2,4})\b/i);
+      const rollMatch = rawInput.match(/\b([0-9]{2}[A-Za-z0-9]{5,10})\b/);
       const studentOwnRoll = context.email?.toUpperCase() || '';
 
       if (rollMatch && !studentOwnRoll.includes(rollMatch[1].toUpperCase())) {
@@ -121,7 +121,7 @@ export class AIOrchestrator {
 
     // Case A: Eligibility questions
     if (lower.includes('eligible') || lower.includes('scholarship') || lower.includes('merit')) {
-      const rollMatch = input.match(/\b([0-9]{2}[A-Za-z]{2,5}[0-9]{2,4})\b/);
+      const rollMatch = input.match(/\b([0-9]{2}[A-Za-z0-9]{5,10})\b/);
       let targetRoll = rollMatch ? rollMatch[1] : undefined;
       if (!targetRoll && context.role === 'student') {
         const own = await StudentService.getOwnStudentProfile(context);
@@ -201,7 +201,7 @@ export class AIOrchestrator {
 
     // Case D: Student Profile or Application Status
     if (lower.includes('application status') || lower.includes('my branch') || lower.includes('my profile') || lower.includes('who is')) {
-      const rollMatch = input.match(/\b([0-9]{2}[A-Za-z]{2,5}[0-9]{2,4})\b/);
+      const rollMatch = input.match(/\b([0-9]{2}[A-Za-z0-9]{5,10})\b/);
       let rollNumber = rollMatch ? rollMatch[1] : undefined;
 
       const pRes = await ToolExecutionEngine.executeTool('getStudentProfile', { rollNumber }, context);

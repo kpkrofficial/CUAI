@@ -140,19 +140,34 @@ export class ChatService {
     const client = this.getClient();
     const messageId = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    const { data, error } = await client
+    const insertPayload: any = {
+      id: messageId,
+      session_id: sessionId,
+      role: message.role,
+      content: message.content,
+      created_at: new Date().toISOString(),
+    };
+    if (message.rag_sources) insertPayload.rag_sources = message.rag_sources;
+    if (message.tool_invocations) insertPayload.tool_invocations = message.tool_invocations;
+
+    let { data, error } = await client
       .from('chat_messages')
-      .insert({
+      .insert(insertPayload)
+      .select()
+      .single();
+
+    if (error && (error.message?.includes('rag_sources') || error.message?.includes('schema cache'))) {
+      const basicPayload = {
         id: messageId,
         session_id: sessionId,
         role: message.role,
         content: message.content,
-        rag_sources: message.rag_sources || null,
-        tool_invocations: message.tool_invocations || null,
         created_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+      };
+      const retry = await client.from('chat_messages').insert(basicPayload).select().single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) throw error;
 
