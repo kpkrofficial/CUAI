@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "fillers": [
+    "can you please tell me",
+    "can you tell me",
+    "please tell me",
+    "could you please tell me",
+    "actually",
+    "you know",
+    "like",
+    "please show me",
+    "tell me",
+    "show me",
+    "i want to know",
+    "what about"
+  ],
+  "merged_word_patterns": [
+    {
+      "pattern": "whatismyrollnumber",
+      "normalized": "what is my roll number",
+      "intent": "PROFILE_SELF"
+    },
+    {
+      "pattern": "myinterpercentagehowmuch",
+      "normalized": "what is my intermediate percentage",
+      "intent": "ACADEMIC_SELF"
+    },
+    {
+      "pattern": "showmymarks",
+      "normalized": "show my marks",
+      "intent": "ACADEMIC_SELF"
+    },
+    {
+      "pattern": "myattendancestatus",
+      "normalized": "what is my attendance",
+      "intent": "ATTENDANCE_SELF"
+    }
+  ],
+  "speech_phonetic_fixes": [
+    {
+      "from": "mark's",
+      "to": "marks"
+    },
+    {
+      "from": "student's",
+      "to": "student"
+    },
+    {
+      "from": "wat is",
+      "to": "what is"
+    }
+  ]
+}

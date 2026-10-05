@@ -49,7 +49,13 @@ export default function MessageItem({
   let metadata: any = {};
   try {
     if (message.metadata_json) {
-      metadata = JSON.parse(message.metadata_json);
+      metadata = typeof message.metadata_json === 'string' ? JSON.parse(message.metadata_json) : message.metadata_json;
+    } else if ((message as any).tool_invocations) {
+      const tools = (message as any).tool_invocations;
+      metadata = {
+        primaryTool: Array.isArray(tools) ? tools[0]?.tool : undefined,
+        toolResults: tools,
+      };
     }
   } catch (e) {}
 
@@ -58,6 +64,7 @@ export default function MessageItem({
     return (
       <AIResponseCard
         content={message.content}
+        messageId={message.id}
         onRegenerate={onRegenerate}
         onOptionClick={onOptionClick}
         metadata={metadata}

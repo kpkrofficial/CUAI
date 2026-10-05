@@ -1,35 +1,36 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
-import { getUserChatSessions, createChatSession, clearUserChatSessions } from '@/lib/db';
+import { getAuthContext } from '@/lib/auth/session';
+import { ChatService } from '@/lib/services/chat.service';
 
-export async function GET(req: Request) {
-  const user = await getCurrentUser('user');
-  const userId = user ? user.id : 'user_guest_default';
-
-  const sessions = getUserChatSessions(userId);
-  return NextResponse.json({ sessions });
-}
-
-export async function POST(req: Request) {
-  const user = await getCurrentUser('user');
-  const userId = user ? user.id : 'user_guest_default';
-
+export async function GET() {
   try {
-    const body = await req.json().catch(() => ({}));
-    const title = body.title || 'New Chat';
-    const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const context = await getAuthContext();
+    if (!context) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
 
-    const session = createChatSession(sessionId, userId, title);
-    return NextResponse.json({ session });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create chat session' }, { status: 500 });
+    const sessions = await ChatService.listSessions(context);
+    return NextResponse.json({ sessions });
+  } catch (error: any) {
+    console.error('[API chat/sessions GET] Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch chat sessions' }, { status: 500 });
   }
 }
 
-export async function DELETE() {
-  const user = await getCurrentUser('user');
-  const userId = user ? user.id : 'user_guest_default';
+export async function POST(req: Request) {
+  try {
+    const context = await getAuthContext();
+    if (!context) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
 
-  clearUserChatSessions(userId);
-  return NextResponse.json({ success: true, message: 'All chat sessions cleared' });
+    const body = await req.json().catch(() => ({}));
+    const title = body.title || 'New Conversation';
+
+    const session = await ChatService.createSession(title, context);
+    return NextResponse.json({ session });
+  } catch (error: any) {
+    console.error('[API chat/sessions POST] Error:', error);
+    return NextResponse.json({ error: 'Failed to create chat session' }, { status: 500 });
+  }
 }

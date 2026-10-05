@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 import { jwtVerify } from 'jose';
 
 const JWT_SECRET = new TextEncoder().encode(
@@ -18,7 +19,7 @@ interface DecodedToken {
   exp?: number;
 }
 
-async function verifyCookieToken(tokenValue?: string, expectedRole?: 'superadmin' | 'admin' | 'user'): Promise<DecodedToken | null> {
+async function verifyLegacyToken(tokenValue?: string, expectedRole?: 'superadmin' | 'admin' | 'user'): Promise<DecodedToken | null> {
   if (!tokenValue) return null;
   try {
     const { payload } = await jwtVerify(tokenValue, JWT_SECRET);
@@ -27,7 +28,6 @@ async function verifyCookieToken(tokenValue?: string, expectedRole?: 'superadmin
     const role = payload.role as 'superadmin' | 'admin' | 'user';
     if (expectedRole && role !== expectedRole) return null;
 
-    // Server-side inactivity timeout
     const lastActivity = typeof payload.lastActivity === 'number' 
       ? payload.lastActivity 
       : (typeof payload.iat === 'number' ? payload.iat * 1000 : 0);
@@ -71,68 +71,93 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Read role-scoped tokens
+  let response = NextResponse.next({ request });
+
+  // 4. Initialize Supabase Client with SSR cookie handling
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+  let supabaseUser: any = null;
+  let supabaseRole: 'superadmin' | 'admin' | 'user' | null = null;
+
+  if (supabaseUrl && supabaseAnonKey) {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    });
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      supabaseUser = user;
+      const rawRole = user.app_metadata?.role || user.user_metadata?.role;
+      if (rawRole === 'superadmin') {
+        supabaseRole = 'superadmin';
+      } else if (rawRole === 'campus_admin' || rawRole === 'staff' || rawRole === 'admin') {
+        supabaseRole = 'admin';
+      } else {
+        supabaseRole = 'user';
+      }
+    }
+  }
+
+  // 5. Read legacy role-scoped tokens as fallback
   const superAdminToken = request.cookies.get('superadmin_auth_token')?.value;
   const adminToken = request.cookies.get('admin_auth_token')?.value;
   const userToken = request.cookies.get('user_auth_token')?.value;
 
+  const validLegacySuper = await verifyLegacyToken(superAdminToken, 'superadmin');
+  const validLegacyAdmin = await verifyLegacyToken(adminToken, 'admin');
+  const validLegacyUser = await verifyLegacyToken(userToken, 'user');
+
+  const isSuperAdmin = supabaseRole === 'superadmin' || !!validLegacySuper;
+  const isAdmin = isSuperAdmin || supabaseRole === 'admin' || !!validLegacyAdmin;
+  const isStudent = !!supabaseUser || !!validLegacyUser || isAdmin;
+
   const hasSwitchParam = request.nextUrl.searchParams.has('switch') || request.nextUrl.searchParams.has('reason');
 
-  // 5. Dedicated Login Pages
+  // 6. Dedicated Login Pages
   if (pathname === '/super-admin/login') {
-    if (!hasSwitchParam) {
-      const validSuperAdmin = await verifyCookieToken(superAdminToken, 'superadmin');
-      if (validSuperAdmin) {
-        return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
-      }
+    if (!hasSwitchParam && isSuperAdmin) {
+      return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
     }
-    return NextResponse.next();
+    return response;
   }
 
   if (pathname === '/admin/login') {
-    if (!hasSwitchParam) {
-      const validAdmin = await verifyCookieToken(adminToken, 'admin');
-      if (validAdmin) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      }
+    if (!hasSwitchParam && isAdmin) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
-    return NextResponse.next();
+    return response;
   }
 
   if (pathname === '/login' || pathname === '/chat/login') {
-    if (!hasSwitchParam) {
-      const validUser = await verifyCookieToken(userToken, 'user');
-      if (validUser) {
-        return NextResponse.redirect(new URL('/chat', request.url));
-      }
-    }
-    return NextResponse.next();
-  }
-
-  // 6. Root Path ('/') authoritative resolution
-  if (pathname === '/') {
-    const validSuperAdmin = await verifyCookieToken(superAdminToken, 'superadmin');
-    if (validSuperAdmin) {
-      return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
-    }
-
-    const validAdmin = await verifyCookieToken(adminToken, 'admin');
-    if (validAdmin) {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-    }
-
-    const validUser = await verifyCookieToken(userToken, 'user');
-    if (validUser) {
+    if (!hasSwitchParam && isStudent && (supabaseRole === 'user' || validLegacyUser)) {
       return NextResponse.redirect(new URL('/chat', request.url));
     }
+    return response;
+  }
 
+  // 7. Root Path ('/') authoritative resolution
+  if (pathname === '/') {
+    if (isSuperAdmin) return NextResponse.redirect(new URL('/super-admin/dashboard', request.url));
+    if (isAdmin) return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    if (isStudent && (supabaseRole === 'user' || validLegacyUser)) return NextResponse.redirect(new URL('/chat', request.url));
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 7. SUPER ADMIN Protection (`/super-admin/*` and `/api/super-admin/*`)
+  // 8. SUPER ADMIN Protection (`/super-admin/*` and `/api/super-admin/*`)
   if (pathname.startsWith('/super-admin') || pathname.startsWith('/api/super-admin')) {
-    const validSuperAdmin = await verifyCookieToken(superAdminToken, 'superadmin');
-    if (!validSuperAdmin) {
+    if (!isSuperAdmin) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json(
           { error: 'Forbidden: Super Administrator authentication required' },
@@ -143,38 +168,28 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    return NextResponse.next();
+    return response;
   }
 
-  // 8. CAMPUS ADMIN & ADMIN APIs Protection (`/admin/*` and `/api/admin/*`)
+  // 9. CAMPUS ADMIN & ADMIN APIs Protection (`/admin/*` and `/api/admin/*`)
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-    // Shared Admin & Super Admin APIs
-    if (pathname.startsWith('/api/admin')) {
-      const validSuperAdmin = await verifyCookieToken(superAdminToken, 'superadmin');
-      const validAdmin = await verifyCookieToken(adminToken, 'admin');
-      if (!validSuperAdmin && !validAdmin) {
+    if (!isAdmin) {
+      if (pathname.startsWith('/api/')) {
         return NextResponse.json(
           { error: 'Forbidden: Administrator authentication required' },
           { status: 403 }
         );
       }
-      return NextResponse.next();
-    }
-
-    // Dedicated Campus Admin Page Views
-    const validAdmin = await verifyCookieToken(adminToken, 'admin');
-    if (!validAdmin) {
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    return NextResponse.next();
+    return response;
   }
 
-  // 9. STUDENT CHATBOT Protection (`/chat/*` and `/api/chat/*`)
+  // 10. STUDENT CHATBOT Protection (`/chat/*` and `/api/chat/*`)
   if (pathname.startsWith('/chat') || pathname.startsWith('/api/chat')) {
-    const validUser = await verifyCookieToken(userToken, 'user');
-    if (!validUser) {
+    if (!isStudent && !supabaseUser) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json(
           { error: 'Unauthorized: Student authentication required' },
@@ -185,10 +200,10 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    return NextResponse.next();
+    return response;
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

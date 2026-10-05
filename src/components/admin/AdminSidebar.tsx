@@ -30,6 +30,7 @@ export default function AdminSidebar({ onLogout, isOpenMobile = false, onCloseMo
 
   const navItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: BarChart2 },
+    { label: "AI Learning & Feedback", href: "/admin/ai-learning", icon: Bot },
     { label: "Folders & Intake", href: "/admin/folders", icon: Folder },
     { label: "Students", href: "/admin/students", icon: GraduationCap },
     { label: "Export Data", href: "/admin/export", icon: Download },

@@ -1,31 +1,24 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
-import { 
-  getChatSessionById, 
-  createChatSession, 
-  insertChatMessage, 
-  updateChatSessionTitle,
-  isGlobalMaintenanceActive,
-  isUserUnderMaintenance,
-  getMaintenanceSettings 
-} from '@/lib/db';
-import { processChatQuery } from '@/lib/rag/engine';
+import { getAuthContext } from '@/lib/auth/session';
+import { ChatService } from '@/lib/services/chat.service';
+import { AIOrchestrator } from '@/lib/ai/orchestrator';
+import { AuditService } from '@/lib/services/audit.service';
+import { ConversationLearningService } from '@/lib/ai/conversation-learning';
+import { enforceRateLimit, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
-  try {
-    const user = await getCurrentUser('user');
-    const userId = user ? user.id : 'user_guest_default';
-    const isSuperAdmin = user?.role === 'superadmin';
+  // 1. Rate Limiting for Chat Inference
+  const rateLimitResponse = enforceRateLimit(req, 'chat_message', RATE_LIMIT_PRESETS.CHAT_QUERY);
+  if (rateLimitResponse) return rateLimitResponse;
 
-    // 1. Check Global or Per-User Maintenance Mode
-    if (!isSuperAdmin) {
-      if (isGlobalMaintenanceActive('chatbot') || (user && isUserUnderMaintenance(user.id))) {
-        const m = getMaintenanceSettings();
-        return NextResponse.json({
-          error: `${m.title}: ${m.message} (Estimated restoration: ${m.estimatedEnd || 'Shortly'})`,
-          is_maintenance: true
-        }, { status: 503 });
-      }
+  try {
+    // 2. Authentication & Tenant Resolution
+    const context = await getAuthContext();
+    if (!context) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Authentication required to use the campus assistant.' },
+        { status: 401 }
+      );
     }
 
     const { sessionId, content } = await req.json();
@@ -34,59 +27,128 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Message content is required' }, { status: 400 });
     }
 
-    let activeSessionId = sessionId;
-
-    // If no session provided or session not found, create new
-    if (!activeSessionId) {
-      activeSessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      createChatSession(activeSessionId, userId, content.trim().substring(0, 30));
-    } else {
-      const existingSession = getChatSessionById(activeSessionId);
-      if (!existingSession) {
-        createChatSession(activeSessionId, userId, content.trim().substring(0, 30));
-      } else if (existingSession.title === 'New Chat') {
-        const autoTitle = content.trim().length > 28 ? `${content.trim().substring(0, 25)}...` : content.trim();
-        updateChatSessionTitle(activeSessionId, autoTitle);
+    // 3. Resolve or Create Chat Session with Strict Ownership Verification (Section 16)
+    let activeSession;
+    if (sessionId) {
+      try {
+        activeSession = await ChatService.getSession(sessionId, context);
+      } catch (err: any) {
+        // IDOR violation or not found
+        return NextResponse.json({ error: err.message || 'Unauthorized session access' }, { status: 403 });
       }
     }
 
-    // 1. Insert User Message
-    const userMsgId = `msg_${Date.now()}_u_${Math.random().toString(36).substring(2, 6)}`;
-    const userMessage = insertChatMessage(userMsgId, activeSessionId, 'user', content.trim());
+    if (!activeSession) {
+      const autoTitle = content.trim().length > 30 ? `${content.trim().substring(0, 27)}...` : content.trim();
+      activeSession = await ChatService.createSession(autoTitle, context);
+    }
 
-    // 2. Execute RAG Retrieval & Response Processing
-    const ragResult = processChatQuery(content.trim(), userId);
-
-    // 3. Insert Assistant Message
-    const assistantMsgId = `msg_${Date.now()}_a_${Math.random().toString(36).substring(2, 6)}`;
-    const assistantMessage = insertChatMessage(
-      assistantMsgId,
-      activeSessionId,
-      'assistant',
-      ragResult.answer,
-      JSON.stringify({
-        found: ragResult.found,
-        queryType: ragResult.queryType,
-        isDisambiguation: ragResult.isDisambiguation || false,
-        matchedStudents: ragResult.matchedStudents.map(s => ({
-          id: s.id,
-          name: s.name,
-          roll_number: s.roll_number,
-          year: s.year,
-          branch: s.branch,
-          profile_image: s.profile_image || null,
-        }))
-      })
+    // 4. Persist User Message directly to PostgreSQL
+    const userMessage = await ChatService.appendMessage(
+      activeSession.id,
+      {
+        role: 'user',
+        content: content.trim(),
+      },
+      context
     );
 
+    // 5. Fetch recent conversation history
+    const pastMessages = await ChatService.getSessionMessages(activeSession.id, context);
+    const history = pastMessages.slice(-6).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    // 6. Invoke AI Orchestrator (Gemini / Verified Tool Execution / Deterministic Engine)
+    const orchestration = await AIOrchestrator.handleMessage(content.trim(), history, context);
+
+    // 7. Persist Assistant Message directly to PostgreSQL
+    const assistantMessage = await ChatService.appendMessage(
+      activeSession.id,
+      {
+        role: 'assistant',
+        content: orchestration.reply,
+        rag_sources: orchestration.citations || null,
+        tool_invocations: orchestration.toolResults || null,
+      },
+      context
+    );
+
+    // 8. Record Immutable Audit Event
+    await AuditService.log(
+      {
+        action: 'CHAT_MESSAGE_PROCESSED',
+        entityType: 'chat',
+        entityId: activeSession.id,
+        details: {
+          tools_executed: (orchestration.toolResults || []).map((t) => t.tool),
+          sources_count: (orchestration.citations || []).length,
+          provider: orchestration.provider,
+          model: orchestration.model,
+          latency_ms: orchestration.latencyMs,
+          usage: orchestration.usage,
+        },
+      },
+      context
+    );
+
+    // 9. Ingest into durable Supabase conversation learning store (PII Redacted)
+    const primaryTool = (orchestration.toolResults || [])[0]?.tool || ((orchestration.citations || []).length > 0 ? 'searchKnowledge' : 'campus_ai');
+    try {
+      await ConversationLearningService.ingestEvent({
+        conversation_id: activeSession.id,
+        message_id: assistantMessage.id,
+        user_role: context.role,
+        raw_user_message: message,
+        assistant_reply: orchestration.reply,
+        intent: orchestration.normalizedQuery?.intent || 'GENERAL_CONVERSATION',
+        tool: primaryTool,
+        provider: orchestration.provider,
+        model: orchestration.model,
+        success: true,
+        metadata: {
+          latencyMs: orchestration.latencyMs,
+          sources: orchestration.sources || [],
+          fallbackUsed: orchestration.fallbackUsed || false,
+        },
+      });
+    } catch (ingestErr) {
+      console.warn('[ChatRoute] Learning event ingest warning:', ingestErr);
+    }
+
+    // 10. Return standardized response preserving existing frontend contracts
+    const enrichedAssistantMessage = {
+      ...assistantMessage,
+      tool_invocations: orchestration.toolResults || null,
+      metadata_json: JSON.stringify({
+        messageId: assistantMessage.id,
+        primaryTool,
+        toolResults: orchestration.toolResults || [],
+        sources: orchestration.sources || [],
+        provider: orchestration.provider,
+        model: orchestration.model,
+      }),
+    };
+
     return NextResponse.json({
-      sessionId: activeSessionId,
+      sessionId: activeSession.id,
       userMessage,
-      assistantMessage,
-      ragResult
+      assistantMessage: enrichedAssistantMessage,
+      provider: orchestration.provider,
+      model: orchestration.model,
+      latencyMs: orchestration.latencyMs,
+      usage: orchestration.usage,
+      ragResult: {
+        answer: orchestration.reply,
+        found: true,
+        sources: orchestration.sources || [],
+        citations: orchestration.citations || [],
+        toolResults: orchestration.toolResults || [],
+      },
     });
   } catch (error: any) {
-    console.error('Chat message API error:', error);
-    return NextResponse.json({ error: 'Failed to process message' }, { status: 500 });
+    console.error('[API chat/message POST] Error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to process message' }, { status: 500 });
   }
 }

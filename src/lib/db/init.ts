@@ -96,6 +96,10 @@ export const DEFAULT_FORM_FIELDS: Array<{
 
 
 export function initializeDatabase() {
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[DB Init] initializeDatabase() skipped in production environment.');
+    return;
+  }
   const db = loadDatabase();
 
   // 1. Folders (Default 4 academic batches: 1st, 2nd, 3rd, 4th Year)

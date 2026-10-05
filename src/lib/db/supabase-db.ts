@@ -97,9 +97,8 @@ export async function persistMasterDbToSupabase(data: DatabaseData): Promise<boo
     if (data.year_folders && data.year_folders.length > 0) {
       tasks.push(admin.from('year_folders').upsert(data.year_folders, { onConflict: 'id' }));
     }
-    if (data.student_records && data.student_records.length > 0) {
-      tasks.push(admin.from('student_records').upsert(data.student_records, { onConflict: 'id' }));
-    }
+    // HARDENING RULE: Student records MUST NEVER be bulk upserted from JSON into Supabase PostgreSQL.
+    // PostgreSQL student_records table is the single authoritative source of truth.
     if (data.form_configs && data.form_configs.length > 0) {
       tasks.push(admin.from('form_configs').upsert(data.form_configs, { onConflict: 'id' }));
     }
@@ -114,7 +113,7 @@ export async function persistMasterDbToSupabase(data: DatabaseData): Promise<boo
     }
 
     await Promise.allSettled(tasks);
-    console.log(`[Supabase PostgreSQL] Upserted ${data.student_records?.length || 0} students & ${data.year_folders?.length || 0} folders to PostgreSQL DB.`);
+    console.log(`[Supabase PostgreSQL] Synced metadata & ${data.year_folders?.length || 0} folders to PostgreSQL DB.`);
 
     // 2. Also keep Supabase Cloud Storage snapshot synchronized
     const bucket = getBucketName();

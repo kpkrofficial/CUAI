@@ -1,0 +1,79 @@
+{
+  "version": "1.0.0",
+  "domain": "higher_education_campus",
+  "entities": {
+    "roll_number": {
+      "canonical": "roll number",
+      "category": "identity",
+      "description": "Unique student registration or matriculation identifier",
+      "standard_patterns": ["roll number", "registration number", "student id", "matriculation number"],
+      "regex": "\\b([0-9]{2}[A-Za-z0-9]{5,10})\\b"
+    },
+    "ssc": {
+      "canonical": "SSC marks",
+      "category": "academic",
+      "description": "Secondary School Certificate / 10th standard board marks",
+      "standard_patterns": ["ssc", "10th", "tenth class", "secondary school certificate", "class 10"]
+    },
+    "intermediate": {
+      "canonical": "intermediate marks",
+      "category": "academic",
+      "description": "Higher Secondary / 12th standard / Intermediate (+2) marks",
+      "standard_patterns": ["intermediate", "inter", "12th", "twelfth class", "plus two", "+2", "class 12"]
+    },
+    "cgpa": {
+      "canonical": "CGPA",
+      "category": "academic",
+      "description": "Cumulative Grade Point Average or semester GPA",
+      "standard_patterns": ["cgpa", "gpa", "grade point average", "cumulative grade", "semester grade"]
+    },
+    "percentage": {
+      "canonical": "percentage",
+      "category": "academic",
+      "description": "Aggregated marks percentage",
+      "standard_patterns": ["percentage", "percent", "marks percentage", "score percentage"]
+    },
+    "attendance": {
+      "canonical": "attendance",
+      "category": "attendance",
+      "description": "Classroom or biometric attendance percentage and records",
+      "standard_patterns": ["attendance", "present percentage", "biometric attendance", "class attendance"]
+    },
+    "leave": {
+      "canonical": "leave",
+      "category": "leave",
+      "description": "Student leave application, balance, or approval status",
+      "standard_patterns": ["leave", "leave balance", "leave application", "leave status", "on duty", "od"]
+    },
+    "fees": {
+      "canonical": "fees",
+      "category": "finance",
+      "description": "Tuition, hostel, or examination fees and dues",
+      "standard_patterns": ["fees", "tuition fee", "fee balance", "fee receipt", "dues", "payment status"]
+    },
+    "hostel": {
+      "canonical": "hostel",
+      "category": "facilities",
+      "description": "Hostel room allocation, block, floor, or curfew",
+      "standard_patterns": ["hostel", "hostel room", "residence", "dormitory", "block", "room number"]
+    },
+    "scholarship": {
+      "canonical": "scholarship",
+      "category": "scholarship",
+      "description": "Merit scholarships, fee reimbursement, and financial aid eligibility",
+      "standard_patterns": ["scholarship", "merit scholarship", "eligibility", "financial aid", "fee concession"]
+    },
+    "admission_documents": {
+      "canonical": "admission documents",
+      "category": "admissions",
+      "description": "Certificates and documents needed for reporting and admission",
+      "standard_patterns": ["admission documents", "required certificates", "documents needed", "checklist"]
+    },
+    "timetable": {
+      "canonical": "timetable",
+      "category": "schedule",
+      "description": "Class schedule, lecture timetable, and exam dates",
+      "standard_patterns": ["timetable", "schedule", "class timings", "exam dates", "calendar"]
+    }
+  }
+}

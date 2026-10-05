@@ -7,6 +7,9 @@ import type { DatabaseData } from '../src/lib/db/store';
 const DB_PATH = path.resolve(process.cwd(), 'data', 'db.json');
 
 export async function createCleanProductionDatabase(): Promise<DatabaseData> {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: createCleanProductionDatabase is forbidden in production.');
+  }
   const dir = path.dirname(DB_PATH);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });

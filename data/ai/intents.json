@@ -1,0 +1,546 @@
+{
+  "version": "1.0.0",
+  "description": "CityApp AI Fixed Intent Enum Definition",
+  "intents": [
+    {
+      "intent": "PROFILE_SELF",
+      "domain": "profile",
+      "description": "Authenticated student querying their own identity, basic info, department, section, or enrollment details.",
+      "tool": "getStudentProfile",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "PROFILE_BY_ROLL",
+      "domain": "profile",
+      "description": "Authorized staff/admin looking up student identity by registration / roll number.",
+      "tool": "getStudentProfile",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "PROFILE_BY_NAME",
+      "domain": "profile",
+      "description": "Authorized staff/admin looking up student identity by student name.",
+      "tool": "getStudentProfile",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ACADEMIC_SELF",
+      "domain": "academic",
+      "description": "Authenticated student querying their own marks, SSC, Intermediate, CGPA, grades, or backlogs.",
+      "tool": "getAcademicRecord",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "ACADEMIC_BY_ROLL",
+      "domain": "academic",
+      "description": "Authorized staff/admin looking up academic performance by student roll number.",
+      "tool": "getAcademicRecord",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ACADEMIC_BY_NAME",
+      "domain": "academic",
+      "description": "Authorized staff/admin looking up academic performance by student name.",
+      "tool": "getAcademicRecord",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "APPLICATION_SELF",
+      "domain": "application",
+      "description": "Authenticated student checking their own admission application status, verification state, or quota.",
+      "tool": "getApplicationStatus",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "APPLICATION_BY_ROLL",
+      "domain": "application",
+      "description": "Authorized staff/admin checking intake application status by roll number.",
+      "tool": "getApplicationStatus",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "APPLICATION_BY_NAME",
+      "domain": "application",
+      "description": "Authorized staff/admin checking intake application status by candidate name.",
+      "tool": "getApplicationStatus",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ELIGIBILITY_SELF",
+      "domain": "eligibility",
+      "description": "Authenticated student checking deterministic eligibility for scholarships or campus placements.",
+      "tool": "getEligibilityData",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "ELIGIBILITY_BY_ROLL",
+      "domain": "eligibility",
+      "description": "Staff/admin evaluating scholarship or placement eligibility for a specific student roll number.",
+      "tool": "getEligibilityData",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ATTENDANCE_SELF",
+      "domain": "attendance",
+      "description": "Authenticated student checking their own biometric or class attendance percentage/records.",
+      "tool": "getAttendanceRecord",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "ATTENDANCE_BY_STUDENT",
+      "domain": "attendance",
+      "description": "Staff/faculty checking attendance of a specific student by roll number.",
+      "tool": "getAttendanceRecord",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ATTENDANCE_SUMMARY",
+      "domain": "attendance",
+      "description": "Faculty/admin querying class, batch, or section attendance aggregate summaries.",
+      "tool": "getAttendanceRecord",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ATTENDANCE_POLICY",
+      "domain": "attendance",
+      "description": "Querying campus attendance regulations, minimum percentage rules, or condonation criteria.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "LEAVE_SELF",
+      "domain": "leave",
+      "description": "Authenticated student/faculty checking their personal leave history or applications.",
+      "tool": "getLeaveStatus",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "LEAVE_BALANCE",
+      "domain": "leave",
+      "description": "Authenticated user checking remaining casual, medical, or academic leave quota.",
+      "tool": "getLeaveStatus",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "LEAVE_STATUS",
+      "domain": "leave",
+      "description": "Checking approval status of a submitted leave request.",
+      "tool": "getLeaveStatus",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "LEAVE_POLICY",
+      "domain": "leave",
+      "description": "Querying rules, medical certificate guidelines, and permissions for student or staff leaves.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "LEAVE_APPLICATION",
+      "domain": "leave",
+      "description": "How to apply or initiate a leave request in the institutional portal.",
+      "tool": "getLeaveStatus",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "FEES_SELF",
+      "domain": "fees",
+      "description": "Authenticated student checking their personal fee dues, fee structure, or payment history.",
+      "tool": "getFeeDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "FEES_BALANCE",
+      "domain": "fees",
+      "description": "Authenticated student inquiring about pending tuition, bus, or hostel fee balance.",
+      "tool": "getFeeDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "FEES_PAYMENT",
+      "domain": "fees",
+      "description": "Inquiring about payment methods, UPI/challan modes, or online payment gateways.",
+      "tool": "getFeeDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "FEES_RECEIPT",
+      "domain": "fees",
+      "description": "Requesting or verifying payment receipt for cleared dues.",
+      "tool": "getFeeDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "FEES_POLICY",
+      "domain": "fees",
+      "description": "Institutional fee payment timeline, penalty for delay, or refund policies.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "HOSTEL_SELF",
+      "domain": "hostel",
+      "description": "Authenticated student querying their assigned hostel block, room, or roommate info.",
+      "tool": "getHostelDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "HOSTEL_ALLOCATION",
+      "domain": "hostel",
+      "description": "Checking room allocation process, bed availability, or warden approval status.",
+      "tool": "getHostelDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "HOSTEL_ROOM",
+      "domain": "hostel",
+      "description": "Inquiring about room maintenance, facilities, AC/non-AC allotment, or room shifting.",
+      "tool": "getHostelDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "HOSTEL_ATTENDANCE",
+      "domain": "hostel",
+      "description": "Hostel night curfew, biometric sign-in, or warden attendance rules.",
+      "tool": "getHostelDetails",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "HOSTEL_POLICY",
+      "domain": "hostel",
+      "description": "Hostel rules, gate timings, mess schedule, visitor policies, and discipline guidelines.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "SCHOLARSHIP_SELF",
+      "domain": "scholarships",
+      "description": "Authenticated student checking their personal scholarship award, fee waiver, or stipend status.",
+      "tool": "getEligibilityData",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "SCHOLARSHIP_POLICY",
+      "domain": "scholarships",
+      "description": "Institutional scholarship criteria, merit cutoff, renewal guidelines, or government schemes.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "SCHOLARSHIP_ELIGIBILITY",
+      "domain": "scholarships",
+      "description": "Evaluating whether student qualifications meet scholarship benchmarks.",
+      "tool": "getEligibilityData",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "ADMISSION_DOCUMENTS",
+      "domain": "admissions",
+      "description": "List of original certificates and photocopies required for reporting and intake verification.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "ADMISSION_PROCESS",
+      "domain": "admissions",
+      "description": "Step-by-step intake procedure, counselling reporting, certificate verification, and fee clearance.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "ADMISSION_POLICY",
+      "domain": "admissions",
+      "description": "Institutional admission regulations, convener/management seat rules, cancellation policy.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "ADMISSION_DEADLINE",
+      "domain": "admissions",
+      "description": "Reporting deadlines, last dates for fee submission, and admission phase cutoff dates.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "COURSE_INFORMATION",
+      "domain": "academics",
+      "description": "Undergraduate and postgraduate degree programs, specializations, and course descriptions.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "SUBJECT_INFORMATION",
+      "domain": "academics",
+      "description": "Subject codes, syllabus details, laboratory requirements, and elective options.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "CURRICULUM_INFORMATION",
+      "domain": "academics",
+      "description": "Academic regulation credits, semester credit structure, grading scale, and exam pattern.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "TIMETABLE_SELF",
+      "domain": "schedule",
+      "description": "Authenticated student querying their class schedule, lecture hours, or lab slots.",
+      "tool": "getTimetable",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "CAMPUS_EVENT",
+      "domain": "schedule",
+      "description": "Campus fests, technical symposiums, workshops, seminars, and club activities.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "CAMPUS_SCHEDULE",
+      "domain": "schedule",
+      "description": "Institutional academic calendar, working days, semester start/end, holidays, and mid-exam dates.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "ADMIN_COUNT",
+      "domain": "admin",
+      "description": "Administrative counting of enrolled students by department, year, or section.",
+      "tool": "countStudents",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ADMIN_SEARCH",
+      "domain": "admin",
+      "description": "Administrative search and listing of students matching specific criteria.",
+      "tool": "searchStudents",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ADMIN_SUMMARY",
+      "domain": "admin",
+      "description": "High-level administrative summaries of campus enrollment, demographics, or intake stats.",
+      "tool": "countStudents",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "ADMIN_ANALYTICS",
+      "domain": "admin",
+      "description": "Cross-sectional analysis, departmental intake breakdowns, and administrative metrics.",
+      "tool": "countStudents",
+      "scope": "admin",
+      "requires_auth": true,
+      "required_role": "admin"
+    },
+    {
+      "intent": "KNOWLEDGE_SEARCH",
+      "domain": "knowledge",
+      "description": "General institutional policy, campus facility timings, contact directory, and handbook questions.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "GENERAL_CAMPUS_INFORMATION",
+      "domain": "knowledge",
+      "description": "Campus facilities, infrastructure, transport routes, sports grounds, and canteen details.",
+      "tool": "searchKnowledge",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "AMBIGUOUS_STUDENT",
+      "domain": "ambiguity",
+      "description": "Query referring to a student name that matches multiple students, requiring disambiguation.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "AMBIGUOUS_INTENT",
+      "domain": "ambiguity",
+      "description": "Under-specified or vague query ('status?', 'check it', 'my score') requiring clarification.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "MISSING_CONTEXT",
+      "domain": "ambiguity",
+      "description": "Follow-up question referring to an unestablished antecedent or missing reference entity.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "PEER_DATA_REQUEST",
+      "domain": "security",
+      "description": "Unauthorized attempt by a student to inspect another student's private profile, marks, or records.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "PII_REQUEST",
+      "domain": "security",
+      "description": "Direct solicitation of protected personal information such as Aadhaar numbers, parents' phone, or residential address.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "any"
+    },
+    {
+      "intent": "UNAUTHORIZED_ADMIN_REQUEST",
+      "domain": "security",
+      "description": "Non-administrative user attempting to invoke administrative tools, directories, or campus aggregate counts.",
+      "tool": "none",
+      "scope": "student",
+      "requires_auth": true,
+      "required_role": "student"
+    },
+    {
+      "intent": "PROMPT_INJECTION",
+      "domain": "security",
+      "description": "Adversarial jailbreak, role-reversal ('Ignore previous instructions'), or developer-override attacks.",
+      "tool": "none",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "SQL_INJECTION",
+      "domain": "security",
+      "description": "Malicious payload injecting SQL clauses ('OR 1=1', 'DROP TABLE', 'UNION SELECT') into chatbot prompts.",
+      "tool": "none",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "SYSTEM_PROMPT_REQUEST",
+      "domain": "security",
+      "description": "Attempts to extract system prompts, hidden rules, server secrets, or internal instructions.",
+      "tool": "none",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "GENERAL_CONVERSATION",
+      "domain": "conversational",
+      "description": "Greetings, pleasantries, small talk, gratitude, and assistant capability questions.",
+      "tool": "none",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    },
+    {
+      "intent": "OUT_OF_SCOPE",
+      "domain": "conversational",
+      "description": "Inquiries unrelated to campus administration, academics, or college operations (e.g. cooking, general world trivia).",
+      "tool": "none",
+      "scope": "public",
+      "requires_auth": false,
+      "required_role": "any"
+    }
+  ]
+}

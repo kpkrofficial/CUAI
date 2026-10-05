@@ -1,44 +1,47 @@
 import { NextResponse } from 'next/server';
-import { 
-  getAllStudents, 
-  getStudentsByFolder, 
-  getFolderById,
-  findStudentByRollNumber, 
-  insertStudentRecord 
-} from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth';
+import { getAuthContext } from '@/lib/auth/session';
+import { StudentService } from '@/lib/services/student.service';
+import { AuditService } from '@/lib/services/audit.service';
 import { uploadBase64ToSupabase } from '@/lib/supabase';
 import { enforceRateLimit, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
-import { recordAuditLog } from '@/lib/audit';
-import { globalCache } from '@/lib/cache';
 
 export async function GET(req: Request) {
   const rateLimitResponse = enforceRateLimit(req, 'admin_students_get', RATE_LIMIT_PRESETS.ADMIN_GENERAL);
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const admin = await getCurrentUser('admin');
-    if (!admin) {
+    const context = await getAuthContext(['superadmin', 'campus_admin', 'staff']);
+    if (!context) {
       return NextResponse.json({ error: 'Forbidden: Campus Administrator privileges required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
-    const folderId = searchParams.get('folderId');
-    const year = searchParams.get('year') || 'all';
-    const search = searchParams.get('search') || '';
+    const folderId = searchParams.get('folderId') || undefined;
+    const year = searchParams.get('year') !== 'all' ? searchParams.get('year') || undefined : undefined;
+    const search = searchParams.get('search') || undefined;
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const offset = (page - 1) * limit;
 
-    if (folderId && folderId !== 'all') {
-      const { records, total } = getStudentsByFolder(folderId, search, limit, offset);
-      return NextResponse.json({ records, total, page, limit });
-    }
+    const { students, total } = await StudentService.listStudents(
+      {
+        folderId: folderId && folderId !== 'all' ? folderId : undefined,
+        year,
+        search,
+        page,
+        limit,
+      },
+      context
+    );
 
-    const { records, total } = getAllStudents(search, year, limit, offset);
-    return NextResponse.json({ records, total, page, limit });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch student records' }, { status: 500 });
+    return NextResponse.json({
+      records: students,
+      total,
+      page,
+      limit,
+    });
+  } catch (error: any) {
+    console.error('[API admin/students GET] Error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to fetch student records' }, { status: 500 });
   }
 }
 
@@ -47,24 +50,15 @@ export async function POST(req: Request) {
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const admin = await getCurrentUser('admin');
-    if (!admin) {
+    const context = await getAuthContext(['superadmin', 'campus_admin', 'staff']);
+    if (!context) {
       return NextResponse.json({ error: 'Forbidden: Campus Administrator privileges required' }, { status: 403 });
     }
 
     const data = await req.json();
 
-    if (!data.name || !data.roll_number || !data.branch || !data.email || !data.year) {
-      return NextResponse.json({ error: 'Name, Roll Number, Branch, Year, and Email are required.' }, { status: 400 });
-    }
-    if (!data.profile_image || !data.profile_image.trim()) {
-      return NextResponse.json({ error: 'Student photograph is mandatory. Please upload a student photo.' }, { status: 400 });
-    }
-    const college = data.college || 'Campus Institute of Technology';
-
-    const existing = findStudentByRollNumber(data.roll_number.trim());
-    if (existing) {
-      return NextResponse.json({ error: `A student with roll number ${data.roll_number} already exists.` }, { status: 409 });
+    if (!data.name || !data.roll_number || !data.branch || !data.year) {
+      return NextResponse.json({ error: 'Name, Roll Number, Branch, and Year are required.' }, { status: 400 });
     }
 
     let folderId = data.folder_id;
@@ -78,13 +72,10 @@ export async function POST(req: Request) {
       folderId = folderMap[data.year] || 'folder_1st_year';
     }
 
-    const studentId = `std_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-
-    // Store student photo permanently in Supabase Cloud Storage
     let profileImageUrl = data.profile_image || '';
     if (profileImageUrl && profileImageUrl.startsWith('data:')) {
       try {
-        const uploadResult = await uploadBase64ToSupabase(profileImageUrl, data.roll_number || studentId, 'student-photos');
+        const uploadResult = await uploadBase64ToSupabase(profileImageUrl, data.roll_number, 'student-photos');
         if (uploadResult.success && uploadResult.url) {
           profileImageUrl = uploadResult.url;
         }
@@ -93,44 +84,32 @@ export async function POST(req: Request) {
       }
     }
 
-    const newStudent = insertStudentRecord({
-      ...data,
-      id: studentId,
-      folder_id: folderId,
-      year: data.year,
-      name: data.name,
-      roll_number: data.roll_number,
-      profile_image: profileImageUrl,
-      branch: data.branch,
-      section: data.section || '',
-      email: data.email,
-      phone: data.phone || '',
-      college: data.college || college,
-      skills: data.skills || '',
-      address: data.address || '',
-      profile_info: data.profile_info || '',
-      custom_fields_json: JSON.stringify(data.custom_fields || {}),
-    });
-
-    // Invalidate cached counts and folder caches
-    globalCache.invalidate(`folder_${folderId}`);
-
-    // Record audit log
-    recordAuditLog({
-      req,
-      actor: { id: admin.id, username: admin.name, role: admin.role },
-      action: 'STUDENT_RECORD_CREATED',
-      target: `${data.roll_number} (${data.name})`,
-      status: 'success',
-      details: {
-        student_id: studentId,
+    const newStudent = await StudentService.upsertStudent(
+      {
+        ...data,
         folder_id: folderId,
-        year: data.year,
+        profile_image: profileImageUrl,
       },
-    });
+      context
+    );
+
+    await AuditService.log(
+      {
+        action: 'STUDENT_RECORD_UPSERTED',
+        entityType: 'student',
+        entityId: newStudent.id,
+        details: {
+          roll_number: newStudent.roll_number,
+          name: newStudent.name,
+          folder_id: folderId,
+        },
+      },
+      context
+    );
 
     return NextResponse.json({ success: true, student: newStudent });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Failed to create student' }, { status: 500 });
+    console.error('[API admin/students POST] Error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to upsert student' }, { status: 500 });
   }
 }

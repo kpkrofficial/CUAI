@@ -33,8 +33,8 @@ export type {
   FormDiagnostic
 };
 
-// Ensure DB is initialized
-initializeDatabase();
+// Database operations interface
+// Note: initializeDatabase() must NOT run automatically on module load
 
 // ==========================================
 // STUDENT RECORD OPERATIONS

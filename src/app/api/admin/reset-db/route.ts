@@ -18,6 +18,12 @@ export async function GET() {
 }
 
 export async function POST() {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Database reset is strictly forbidden in production.' },
+      { status: 403 }
+    );
+  }
   try {
     initializeDatabase();
     logAuditEvent("SuperAdmin", "FACTORY_RESET_DATABASE", "database", "data/db.json", "Reseeded database to clean state");
